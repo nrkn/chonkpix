@@ -1,0 +1,13 @@
+{
+  "name": "chonkpix",
+  "version": "0.0.1",
+  "description": "A stupidly simple chonky pixel engine",
+  "main": "index.js",
+  "scripts": {
+    "clean": "rimraf ./data/www/src",
+    "start": "tsc && http-server data/www"
+  },
+  "keywords": [ "game", "engine", "pixel", "retro"],
+  "author": "Nik Coughlin <nrkn.com@gmail.com>",
+  "license": "MIT"
+}

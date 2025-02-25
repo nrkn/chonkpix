@@ -1,23 +1,24 @@
 export type State = {
-    keys: Record<string, boolean>;
-    keyPresses: string[];
+    getKeys: () => Record<string, boolean>;
+    getKeyPresses: () => string[];
     mouse: {
-        buttons: Record<number, boolean>;
-        readonly x: number;
-        readonly y: number;
-        readonly wheel: number;
-        readonly inBounds: boolean;
+        getButtons: () => Record<number, boolean>;
+        getX: () => number;
+        getY: () => number;
+        getWheel: () => number;
+        isInBounds: () => boolean;
     };
     time: {
-        readonly elapsed: number;
-        readonly frameTime: number;
+        getElapsed: () => number;
+        getFrameTime: () => number;
     };
     view: {
-        zoom: number;
-        readonly buffer: ImageData;
+        getZoom: () => number;
+        setZoom: (value: number) => void;
+        getBuffer: () => ImageData;
     };
-    running: boolean;
-    debug: boolean;
+    getRunning: () => boolean;
+    setRunning: (value: boolean) => void;
 };
 export type Scene = {
     init: (state: State) => Promise<void>;

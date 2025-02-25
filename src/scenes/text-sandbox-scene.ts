@@ -78,8 +78,10 @@ export const textSandboxScene = (): Scene => {
     font = assrt(fonts.get(fontName), `Expected font ${fontName}`)
     fontPts = fontImageToPoints(font)
 
-    const vw = state.view.buffer.width - padding * 2
-    const vh = state.view.buffer.height - padding * 2
+    const buffer = state.view.getBuffer()
+
+    const vw = buffer.width - padding * 2
+    const vh = buffer.height - padding * 2
 
     textCols = Math.floor(vw / font.width)
     textRows = Math.floor(vh / font.height)
@@ -115,24 +117,29 @@ export const textSandboxScene = (): Scene => {
   const cursorRate = 500
 
   const _handleKeys = (state: State) => {
-    if (state.keys['Escape']) {
-      state.running = false
+    const keys = state.getKeys()
+
+    if (keys['Escape']) {
+      state.setRunning(false)
+
       // consume the key
-      state.keys['Escape'] = false
+      keys['Escape'] = false
 
       return
     }
 
-    const fState = state.keys['F1']
+    const fState = keys['F1']
 
     if (fState) {
       fontIndex = (fontIndex + 1) % monoFontFiles.length
-      state.keys['F1'] = false
+      keys['F1'] = false
       setFont(state, fontIndex)
       resized()
     }
 
-    for (const key of state.keyPresses) {
+    const keyPresses = state.getKeyPresses()
+
+    for (const key of keyPresses) {
       if (printableKeySet.has(key as PrintableKey)) {
         term.append(key)
       }
@@ -147,7 +154,8 @@ export const textSandboxScene = (): Scene => {
       }
     }
 
-    state.keyPresses = []
+    // consume all key presses
+    keyPresses.length = 0
   }
 
   const update = (state: State) => {
@@ -157,21 +165,25 @@ export const textSandboxScene = (): Scene => {
 
       // mouse
 
-      const wheel = state.mouse.wheel
+      const wheel = state.mouse.getWheel()
+      const zoom = state.view.getZoom()
 
       if (wheel < 0) {
-        state.view.zoom += 1
+        //state.view.zoom += 1
+        state.view.setZoom(zoom + 1)
       } else if (wheel > 0) {
-        state.view.zoom -= 1
+        state.view.setZoom(zoom - 1)
       }
     }
 
     // draw
 
-    fill(state.view.buffer, bgColor)
+    const buffer = state.view.getBuffer()
 
-    const vw = state.view.buffer.width - padding * 2
-    const vh = state.view.buffer.height - padding * 2
+    fill(buffer, bgColor)
+
+    const vw = buffer.width - padding * 2
+    const vh = buffer.height - padding * 2
 
     const newTextCols = Math.floor(vw / font.width)
     const newTextRows = Math.floor(vh / font.height)
@@ -185,7 +197,7 @@ export const textSandboxScene = (): Scene => {
 
     const termView = term.view(textCols, textRows)
 
-    const isCursor = (state.time.elapsed % (cursorRate * 2)) < cursorRate
+    const isCursor = (state.time.getElapsed() % (cursorRate * 2)) < cursorRate
 
     let cursor = isCursor ? '_' : ' '
 
@@ -201,34 +213,35 @@ export const textSandboxScene = (): Scene => {
       const dy = padding + y * font.height
 
       const indices = textLayoutToIndices(
-        state.view.buffer, dx, dy, fontPts, lineLayout
+        buffer, dx, dy, fontPts, lineLayout
       )
 
-      fillIndices(indices, state.view.buffer, fgColor)
+      fillIndices(indices, buffer, fgColor)
     }
 
     // debug
 
-    const fps = Math.round(1000 / state.time.frameTime)
-    const fpsText = `${fps} fps (${state.time.frameTime.toFixed(1)}ms)`
+    const frameTime = state.time.getFrameTime()
+    const fps = Math.round(1000 / frameTime)
+    const fpsText = `${fps} fps (${frameTime.toFixed(1)}ms)`
 
     const fpsW = font.width * fpsText.length + padding * 2
     const fpsH = font.height + padding * 2
-    const fpsX = state.view.buffer.width - fpsW - padding
+    const fpsX = buffer.width - fpsW - padding
     const fpsY = padding
 
     const fpsBg = createColor(0x00, 0x78, 0xd4)
     const fpsFg = createColor(0xff, 0xd7, 0x00)
 
-    fill(state.view.buffer, fpsBg, [fpsX, fpsY, fpsW, fpsH])
+    fill(buffer, fpsBg, [fpsX, fpsY, fpsW, fpsH])
 
     const fpsLayout = layoutTextLine(font, fpsText)
 
     const fpsIndices = textLayoutToIndices(
-      state.view.buffer, fpsX + padding, fpsY + padding, fontPts, fpsLayout
+      buffer, fpsX + padding, fpsY + padding, fontPts, fpsLayout
     )
 
-    fillIndices(fpsIndices, state.view.buffer, fpsFg)
+    fillIndices(fpsIndices, buffer, fpsFg)
   }
 
   const quit = async (_state: State) => {

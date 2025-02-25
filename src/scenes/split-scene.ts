@@ -57,8 +57,10 @@ export const splitScene = (
   }
 
   const resized = (state: State) => {
-    lastW = state.view.buffer.width
-    lastH = state.view.buffer.height
+    const buffer = state.view.getBuffer()
+
+    lastW = buffer.width
+    lastH = buffer.height
 
     const [leftR, rightR] = getRects()
 
@@ -68,22 +70,15 @@ export const splitScene = (
     updateSize(leftState, state, leftR)
     updateSize(rightState, state, rightR)
 
-    Object.defineProperty(leftState.view, 'buffer', {
-      get() {
-        return leftBuffer
-      }
-    })
-
-    Object.defineProperty(rightState.view, 'buffer', {
-      get() {
-        return rightBuffer
-      }
-    })
+    leftState.view.getBuffer = () => leftBuffer
+    rightState.view.getBuffer = () => rightBuffer
   }
 
   const init = async (state: State) => {
-    lastW = state.view.buffer.width
-    lastH = state.view.buffer.height
+    const buffer = state.view.getBuffer()
+
+    lastW = buffer.width
+    lastH = buffer.height
 
     leftState = wrapState(state, leftBuffer)
     rightState = wrapState(state, rightBuffer)
@@ -103,21 +98,25 @@ export const splitScene = (
     //
     // if we find a use case for *not* doing this we can add options to the 
     // splitScene factory function
-    if (state.keys['Escape']) {
-      state.running = false
-      state.keys['Escape'] = false
+    const keys = state.getKeys()
+
+    if (keys['Escape']) {
+      //state.running = false
+      state.setRunning(false)
+
+      keys['Escape'] = false
 
       return
     }
 
-    if (state.keys['Tab']) {
+    if (keys['Tab']) {
       active = active === 0 ? 1 : 0
-      state.keys['Tab'] = false
+      keys['Tab'] = false
 
       onSwitch(state)
     }
 
-    const { buffer } = state.view
+    const buffer = state.view.getBuffer()
     const { width, height } = buffer
 
     if (width !== lastW || height !== lastH) {
@@ -176,173 +175,53 @@ export const splitScene = (
 
 // overwrite mouseX, mouseY and inBounds for new size
 const updateSize = (state: State, parentState: State, rect: T4) => {
-  Object.defineProperty(state.mouse, 'x', {
-    get() {
-      return parentState.mouse.x - rect[0]
-    }
-  })
+  state.mouse.getX = () => parentState.mouse.getX() - rect[0]
+  state.mouse.getY = () => parentState.mouse.getY() - rect[1]
 
-  Object.defineProperty(state.mouse, 'y', {
-    get() {
-      return parentState.mouse.y - rect[1]
-    }
-  })
+  state.mouse.isInBounds = () => {
+    const [_x, _y, w, h] = rect
 
-  Object.defineProperty(state.mouse, 'inBounds', {
-    get() {
-      const [_x, _y, w, h] = rect
-
-      return (
-        parentState.mouse.inBounds &&
-        state.mouse.x >= 0 && state.mouse.x < w &&
-        state.mouse.y >= 0 && state.mouse.y < h
-      )
-    }
-  })
+    return (
+      parentState.mouse.isInBounds() &&
+      state.mouse.getX() >= 0 && state.mouse.getX() < w &&
+      state.mouse.getY() >= 0 && state.mouse.getY() < h
+    )
+  }
 }
 
 // this state will no longer see or modify the parent state's io
 const disableIo = (state: State) => {
-  Object.defineProperty(state, 'keys', {
-    get() {
-      return {}
-    },
-    set(_value: Record<string, boolean>) {
-      // ignore
-    }
-  })
-
-  Object.defineProperty(state, 'keyPresses', {
-    get() {
-      return []
-    },
-    set(_value: string[]) {
-      // ignore
-    }
-  })
-
-  Object.defineProperty(state.mouse, 'buttons', {
-    get() {
-      return {}
-    },
-    set(_value: Record<number, boolean>) {
-      // ignore
-    }
-  })
-
-  Object.defineProperty(state.mouse, 'wheel', {
-    get() {
-      return 0
-    }
-  })
+  state.getKeys = () => ({})
+  state.getKeyPresses = () => []
+  state.mouse.getButtons = () => ({})
+  state.mouse.getWheel = () => 0
 }
 
 // reattaches the parent state's io to the child state
 const enableIo = (state: State, parentState: State) => {
-  Object.defineProperty(state, 'keys', {
-    get() {
-      return parentState.keys
-    },
-    set(value: Record<string, boolean>) {
-      parentState.keys = value
-    }
-  })
-
-  Object.defineProperty(state, 'keyPresses', {
-    get() {
-      return parentState.keyPresses
-    },
-    set(value: string[]) {
-      parentState.keyPresses = value
-    }
-  })
-
-  Object.defineProperty(state.mouse, 'buttons', {
-    get() {
-      return parentState.mouse.buttons
-    },
-    set(value: Record<number, boolean>) {
-      parentState.mouse.buttons = value
-    }
-  })
-
-  Object.defineProperty(state.mouse, 'wheel', {
-    get() {
-      return parentState.mouse.wheel
-    }
-  })
+  state.getKeys = parentState.getKeys
+  state.getKeyPresses = parentState.getKeyPresses
+  state.mouse.getButtons = parentState.mouse.getButtons
+  state.mouse.getWheel = parentState.mouse.getWheel
 }
 
 // create a new wrapped state object with its own buffer
 const wrapState = (state: State, buffer: ImageData): State => {
+  const { 
+    getKeys, getKeyPresses, mouse, time, view, getRunning, setRunning 
+  } = state
+  
   const wrapped: State = {
-    get keys() {
-      return state.keys
+    getKeys,
+    getKeyPresses,
+    mouse: { ...mouse },
+    time: { ...time },
+    view: { 
+      ...view,
+      getBuffer: () => buffer
     },
-    set keys(value) {
-      state.keys = value
-    },
-    get keyPresses() {
-      return state.keyPresses
-    },
-    set keyPresses(value) {
-      state.keyPresses = value
-    },
-
-    mouse: {
-      get buttons() {
-        return state.mouse.buttons
-      },
-      set buttons(value) {
-        state.mouse.buttons = value
-      },
-      get x() {
-        return state.mouse.x
-      },
-      get y() {
-        return state.mouse.y
-      },
-      get inBounds() {
-        return state.mouse.inBounds
-      },
-      get wheel() {
-        return state.mouse.wheel
-      }
-    },
-
-    time: {
-      get elapsed() {
-        return state.time.elapsed
-      },
-      get frameTime() {
-        return state.time.frameTime
-      }
-    },
-
-    view: {
-      get zoom() {
-        return state.view.zoom
-      },
-      set zoom(value) {
-        state.view.zoom = value
-      },
-      get buffer() {
-        return buffer
-      }
-    },
-
-    get running() {
-      return state.running
-    },
-    set running(value) {
-      state.running = value
-    },
-    get debug() {
-      return state.debug
-    },
-    set debug(value) {
-      state.debug = value
-    }
+    getRunning,
+    setRunning
   }
 
   return wrapped

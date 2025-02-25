@@ -24,10 +24,12 @@ const readAlpha = (state: State, ch: string, destroy = false) => {
   const upper = ch.toUpperCase()
   const lower = ch.toLowerCase()
 
-  const alpha = state.keys[upper] ? upper : state.keys[lower] ? lower : null
+  const keys = state.getKeys()
+
+  const alpha = keys[upper] ? upper : keys[lower] ? lower : null
 
   if (destroy && alpha) {
-    state.keys[alpha] = false
+    keys[alpha] = false
   }
 
   return alpha
@@ -100,10 +102,10 @@ export const debugScene = (): Scene => {
     if (maybe(lastPaintX) && maybe(lastPaintY)) {
       const line = bresenhamLine(lastPaintX, lastPaintY, x, y)
 
-      for( const [ x, y ] of line ) {
+      for (const [x, y] of line) {
         getPaintRow(y)[x] = true
       }
-    } else {      
+    } else {
       getPaintRow(y)[x] = true
     }
 
@@ -114,24 +116,27 @@ export const debugScene = (): Scene => {
   let frame = 0
 
   const _handleKeys = (state: State) => {
-    if (state.keys['Escape']) {
-      state.running = false
+    const keys = state.getKeys()
+
+    if (keys['Escape']) {
+      state.setRunning(false)
+
       // consume the key
-      state.keys['Escape'] = false
+      keys['Escape'] = false
 
       return
     }
 
-    if (state.keys['ArrowUp']) {
+    if (keys['ArrowUp']) {
       polySides--
 
-      state.keys['ArrowUp'] = false
+      keys['ArrowUp'] = false
     }
 
-    if (state.keys['ArrowDown']) {
+    if (keys['ArrowDown']) {
       polySides++
 
-      state.keys['ArrowDown'] = false
+      keys['ArrowDown'] = false
     }
 
     const sState = readAlpha(state, 'S', true)
@@ -148,17 +153,18 @@ export const debugScene = (): Scene => {
       polySides = Math.min(Math.max(polySides, minPolySides), maxPolySides)
 
       // capture a reference - it is a destructive read
-      const wheel = state.mouse.wheel
+      const wheel = state.mouse.getWheel()
+      const zoom = state.view.getZoom()
 
       if (wheel < 0) {
-        state.view.zoom += 1
+        state.view.setZoom( zoom + 1 )
       } else if (wheel > 0) {
-        state.view.zoom -= 1
+        state.view.setZoom( zoom - 1 )
       }
 
       // maybe paint
-      if (state.mouse.buttons[0]) {
-        addPaintPt(state.mouse.x, state.mouse.y)
+      if (state.mouse.getButtons()[0]) {
+        addPaintPt(state.mouse.getX(), state.mouse.getY())
         painting = true
       } else if (painting) {
         painting = false
@@ -167,7 +173,7 @@ export const debugScene = (): Scene => {
       }
     }
 
-    const { buffer } = state.view
+    const buffer = state.view.getBuffer()
     const { width, height } = buffer
 
     // not very efficent - plenty of faster ways to do this - but that's a good
@@ -389,7 +395,7 @@ export const debugScene = (): Scene => {
       polySides, width / 2, height / 2, minSide / 4, polyRotation
     )
 
-    const frameTime = state.time.frameTime
+    const frameTime = state.time.getFrameTime()
     const rotateBy = 0.001 * frameTime
 
     const strokeLine = (line: T4, color: number) => {
@@ -428,10 +434,10 @@ export const debugScene = (): Scene => {
 
     // show custom cursor
 
-    if (state.mouse.inBounds) {
+    if (state.mouse.isInBounds()) {
       composite(
         cursor, buffer,
-        [0, 0, cursor.width, cursor.height, state.mouse.x, state.mouse.y]
+        [0, 0, cursor.width, cursor.height, state.mouse.getX(), state.mouse.getY()]
       )
     }
 
@@ -444,7 +450,7 @@ export const debugScene = (): Scene => {
 
   const quit = async (state: State) => {
     console.log('quitting debug scene')
-    state.debug = false
+
     releaseMouse()
   }
 

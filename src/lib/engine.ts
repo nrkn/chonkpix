@@ -1,25 +1,15 @@
 import { createImage } from './image/create.js'
 import { Maybe, Scene, State } from './types.js'
 
-// stupidly simple 2d pixel game engine
+// chonkpix
+// a stupidly simple chonky pixel engine
 
-// defers pretty much everything to the scene, just provides a basic harness
-// for handling input, timing, rendering etc
-//
-// this is pretty flexible - for example you can have multiple scenes 
-// concurrently by having a single scene act as a manager and dispatching to
-// its child scenes, intercepting the main state and passing decorated versions
-// to the children so that mouse is relative to the child scene position, they
-// can have their own frame buffer which gets blitted to the main one, keys and
-// mouse only go to the active scene etc etc
-
-// state:
+// private state:
 
 let currentScene: Maybe<Scene>
 
 // misc 
 
-let debug = false
 let running = false
 let rafId: number
 
@@ -66,71 +56,46 @@ let frameCtx: CanvasRenderingContext2D
 // public state
 
 const state: State = {
-  // expose keys directly, that way the consumer can make decisions like 
+  // expose keys directly, that way the consumer can make decisions like
   // clearing the key state after reading etc
-  keys,
-  get keyPresses() {
-    return keyPresses
-  },
-  set keyPresses(value: string[]) {
-    keyPresses = value
-  },
+  getKeys: () => keys,
+  getKeyPresses: () => keyPresses,
 
   mouse: {
-    // same as keys
-    buttons: mouseButtons,
-    get x() {
-      return frameMouseX
-    },
-    get y() {
-      return frameMouseY
-    },
-    get inBounds() {
-      return cursorInBounds
-    },
-    // destructive read
-    // otherwise the delta is retained from frame to frame
-    // we could have made it so the consumer can explicitly clear it after use
-    // or choose to use it, but we have no use case for that
-    get wheel() {
+    getButtons: () => mouseButtons,
+    getX: () => frameMouseX,
+    getY: () => frameMouseY,
+    getWheel: () => {
+      // destructive read
+      // otherwise the delta is retained from frame to frame
+      // we could have made it so the consumer can explicitly clear it after use
+      // or choose to use it, but we have no use case for
       const value = mouseWheelDelta
 
       mouseWheelDelta = 0
 
       return value
-    }
+    },
+    isInBounds: () => cursorInBounds
   },
+
   time: {
-    get elapsed() {
-      return elapsed
-    },
-    get frameTime() {
-      return frameTime
-    }
+    getElapsed: () => elapsed,
+    getFrameTime: () => frameTime
   },
+
   view: {
-    get zoom() {
-      return zoom
-    },
-    set zoom(value: number) {
+    getZoom: () => zoom,
+    setZoom: (value: number) => {
       zoom = Math.max(minZoom, Math.min(maxZoom, value))
       resize()
     },
-    get buffer() {
-      return frameBuffer
-    }
+    getBuffer: () => frameBuffer
   },
-  get running() {
-    return running
-  },
-  set running(value: boolean) {
+
+  getRunning: () => running,
+  setRunning: (value: boolean) => {
     running = value
-  },
-  get debug() {
-    return debug
-  },
-  set debug(value: boolean) {
-    debug = value
   }
 }
 
@@ -363,42 +328,6 @@ const tick = (time: number) => {
   // render
 
   frameCtx.putImageData(frameBuffer, 0, 0)
-
-  // debug
-
-  if (!debug) {
-    rafId = requestAnimationFrame(tick)
-    return
-  }
-
-  frameCtx.fillStyle = `rgba(0,0,0,0.5)`
-  frameCtx.fillRect(0, 0, 100, 33)
-
-  frameCtx.fillStyle = '#ffffff'
-  frameCtx.font = `10px monospace`
-
-  let mouseBtnState = ''
-
-  for (let i = 0; i < 3; i++) {
-    mouseBtnState += mouseButtons[i] ? `${i}` : '-'
-  }
-
-  let keyState = ''
-
-  keyState += (keys['W'] || keys['w'] ? 'W' : '-')
-  keyState += (keys['A'] || keys['a'] ? 'A' : '-')
-  keyState += (keys['S'] || keys['s'] ? 'S' : '-')
-  keyState += (keys['D'] || keys['d'] ? 'D' : '-')
-
-  const fps = Math.round(1000 / frameTime)
-
-  const cursorState = useSystemMouse ? ' ON' : 'OFF'
-
-  frameCtx.fillText(`${fps} fps (${frameTime.toFixed(1)})`, 1, 11)
-  frameCtx.fillText(
-    `${mouseBtnState} ${cursorState} ${frameMouseX}, ${frameMouseY}`, 1, 21
-  )
-  frameCtx.fillText(`${keyState}`, 1, 31)
 
   //
 
