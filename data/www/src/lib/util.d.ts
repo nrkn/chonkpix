@@ -1,0 +1,22 @@
+import { Maybe, T2, T3, T4, T5, T6 } from './types.js';
+export declare const assrt: <T>(value: Maybe<T>, message?: string) => T;
+export declare const maybe: <T>(value: Maybe<T>) => value is T;
+export declare const assrtInt: (value: number, message?: string) => number;
+export declare const assrtPositive: (value: number, message?: string) => number;
+export declare const t2Factory: <T>(defaultValue: T) => (a?: T, b?: T) => T2<T>;
+export declare const t3Factory: <T>(defaultValue: T) => (a?: T, b?: T, c?: T) => T3<T>;
+export declare const t4Factory: <T>(defaultValue: T) => (a?: T, b?: T, c?: T, d?: T) => T4<T>;
+export declare const t5Factory: <T>(defaultValue: T) => (a?: T, b?: T, c?: T, d?: T, e?: T) => T5<T>;
+export declare const t6Factory: <T>(defaultValue: T) => (a?: T, b?: T, c?: T, d?: T, e?: T, f?: T) => T6<T>;
+export declare const t2N: (a?: number, b?: number) => T2<number>;
+export declare const t3N: (a?: number, b?: number, c?: number) => T3<number>;
+export declare const t4N: (a?: number, b?: number, c?: number, d?: number) => T4<number>;
+export declare const t5N: (a?: number, b?: number, c?: number, d?: number, e?: number) => T5<number>;
+export declare const t6N: (a?: number, b?: number, c?: number, d?: number, e?: number, f?: number) => T6<number>;
+export declare const lerp: (a: number, b: number, t: number) => number;
+export declare const limitedLogger: (maxLogs?: number, logger?: (...data: any[]) => void) => {
+    pause: () => void;
+    resume: () => void;
+    reset: (max?: number) => void;
+    log: (...data: any[]) => void;
+};

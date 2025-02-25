@@ -1,0 +1,10 @@
+import { T2, T3, T4, T5 } from './types.js';
+export declare const t2: <T>(value: T) => (a?: T, b?: T) => T2<T>;
+export declare const t3: <T>(value: T) => (a?: T, b?: T, c?: T) => T3<T>;
+export declare const t4: <T>(value: T) => (a?: T, b?: T, c?: T, d?: T) => T4<T>;
+export declare const t5: <T>(value: T) => (a?: T, b?: T, c?: T, d?: T, e?: T) => T5<T>;
+export declare const t2N: (a?: number, b?: number) => T2<number>;
+export declare const t3N: (a?: number, b?: number, c?: number) => T3<number>;
+export declare const t4N: (a?: number, b?: number, c?: number, d?: number) => T4<number>;
+export declare const t5N: (a?: number, b?: number, c?: number, d?: number, e?: number) => T5<number>;
+export declare const log: (...args: any[]) => void;

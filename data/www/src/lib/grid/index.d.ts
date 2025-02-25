@@ -1,0 +1,10 @@
+import { T2 } from '../types.js';
+import { GridLayout, GridKey, NamedGridLayout } from './types.js';
+export declare const generateGridLayout: (cellW: number, cellH: number, cols: number, rows: number, gap?: number, padding?: number) => GridLayout;
+export declare const measureCells: (size: number, count: number, gap?: number, padding?: number) => number;
+export declare const generateNamedGridLayout: (grid: GridLayout) => NamedGridLayout;
+export declare const colKey: (col: number) => string;
+export declare const parseColKey: (key: string) => number;
+export declare const gridKey: (col: number, row: number) => GridKey;
+export declare const parseGridKey: (gridKey: GridKey) => T2;
+export declare const countCells: (avail: number, each: number, gap?: number, padding?: number) => number;
