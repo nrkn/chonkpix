@@ -1,6 +1,6 @@
 import { T2 } from '../types.js';
 import { GridLayout, GridKey, NamedGridLayout } from './types.js';
-export declare const generateGridLayout: (cellW: number, cellH: number, cols: number, rows: number, gap?: number, padding?: number) => GridLayout;
+export declare const generateGridLayout: (cellW: number, cellH: number, cols: number, rows: number, gap?: number, padding?: number, dx?: number, dy?: number) => GridLayout;
 export declare const measureCells: (size: number, count: number, gap?: number, padding?: number) => number;
 export declare const generateNamedGridLayout: (grid: GridLayout) => NamedGridLayout;
 export declare const colKey: (col: number) => string;

@@ -14,6 +14,7 @@ export declare const t4N: (a?: number, b?: number, c?: number, d?: number) => T4
 export declare const t5N: (a?: number, b?: number, c?: number, d?: number, e?: number) => T5<number>;
 export declare const t6N: (a?: number, b?: number, c?: number, d?: number, e?: number, f?: number) => T6<number>;
 export declare const lerp: (a: number, b: number, t: number) => number;
+export declare const wait: (ms?: number) => Promise<unknown>;
 export declare const limitedLogger: (maxLogs?: number, logger?: (...data: any[]) => void) => {
     pause: () => void;
     resume: () => void;

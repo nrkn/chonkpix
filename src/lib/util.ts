@@ -54,6 +54,8 @@ export const t6N = t6Factory(0)
 
 export const lerp = (a: number, b: number, t: number) => a + (b - a) * t
 
+export const wait = (ms = 0) => new Promise(resolve => setTimeout(resolve, ms))
+
 // for debugging - eg when inside a raf - we only want first few logs, not for
 // it to keep spewing multiple logs out every frame
 export const limitedLogger = (maxLogs = 10, logger = console.log) => {

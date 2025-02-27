@@ -5,7 +5,8 @@ import { GridLayout, GridKey, NamedGridLayout } from './types.js'
 export const generateGridLayout = (
   cellW: number, cellH: number,
   cols: number, rows: number,
-  gap = 0, padding = 0
+  gap = 0, padding = 0,
+  dx = 0, dy = 0
 ): GridLayout => {
   const cellCount = cols * rows
   const data = Array<T2>(cellCount)
@@ -17,7 +18,7 @@ export const generateGridLayout = (
   let y = padding
 
   for (let i = 0; i < cellCount; i++) {
-    data[i] = [x, y]
+    data[i] = [x + dx, y + dy]
 
     x += cellW + gap
 

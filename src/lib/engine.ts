@@ -1,5 +1,6 @@
 import { createImage } from './image/create.js'
 import { Maybe, Scene, State } from './types.js'
+import { wait } from './util.js'
 
 // chonkpix
 // a stupidly simple chonky pixel engine
@@ -220,14 +221,24 @@ export const takeMouse = () => {
   frameCanvas.classList.toggle('hide-cursor', true)
 }
 
+// hard render
+
+export const render = async () => {
+  frameCtx.putImageData(frameBuffer, 0, 0)
+
+  await wait()
+}
+
 // runner:
 
 // initialise the engine with a scene
 export const start = async (scene: Scene) => {
   // if it already has a scene, halt it first
-  if( currentScene ) halt()
+  if (currentScene) halt()
 
   currentScene = scene
+
+  if (frameCanvas) frameCanvas.remove()
 
   frameCanvas = document.createElement('canvas')
   frameCanvas.id = 'viewport'
@@ -287,7 +298,7 @@ const halt = () => {
 
   releaseMouse()
 
-  if (currentScene){
+  if (currentScene) {
     currentScene.quit(state).catch(console.error)
 
     currentScene = null
@@ -316,8 +327,8 @@ const tick = (time: number) => {
   frameTime = time - lastTime
   lastTime = time
 
-  if( currentScene ) currentScene.update(state)
-  
+  if (currentScene) currentScene.update(state)
+
   // scene may have sent a quit signal
   if (!running) {
     halt()

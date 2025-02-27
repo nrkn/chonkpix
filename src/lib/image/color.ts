@@ -4,8 +4,15 @@ import { lerp } from '../util.js'
 export const createColor = (r: number, g: number, b: number, a = 255) =>
   (a << 24) | (b << 16) | (g << 8) | r
 
+export const createColor24 = (r: number, g: number, b: number) =>
+  (b << 16) | (g << 8) | r
+
 export const colorToRgba = (color: number): T4 => [
   color & 0xFF, (color >> 8) & 0xFF, (color >> 16) & 0xFF, color >>> 24
+]
+
+export const colorToRgb = (color: number): T3 => [
+  color & 0xFF, (color >> 8) & 0xFF, (color >> 16) & 0xFF
 ]
 
 export const generateHues = (count: number, v = 100) => {
@@ -22,6 +29,7 @@ export const generateHues = (count: number, v = 100) => {
   return colors
 }
 
+// range is 0-360, s and v are 0-100
 export const hsvToRgb = (h: number, s: number, v: number): T3 => {
   const sFloat = s / 100
   const vFloat = v / 100
