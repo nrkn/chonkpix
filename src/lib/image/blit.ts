@@ -31,6 +31,9 @@ export const blit = (
   return dest
 }
 
+// copies rows from one image to another
+// much faster than blit or composite etc when the amount of src to be copied
+// is sparse
 export const blitRows = (
   src: ImageData, srcRows: Row<any>[], dest: ImageData,
   dx = 0, dy = 0

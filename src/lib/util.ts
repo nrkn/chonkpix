@@ -1,15 +1,15 @@
 import { Maybe, T2, T3, T4, T5, T6 } from './types.js'
 
+export const maybe = <T>(value: Maybe<T>): value is T =>
+  value !== null && value !== undefined
+
 export const assrt = <T>(
   value: Maybe<T>, message = 'Expected value, saw null or undefined'
 ): T => {
-  if (value === null || value === undefined) throw Error(message)
+  if (maybe(value)) return value
 
-  return value
+  throw Error(message)
 }
-
-export const maybe = <T>(value: Maybe<T>): value is T =>
-  value !== null && value !== undefined
 
 export const assrtInt = (
   value: number, message = `Expected integer, saw ${value}`

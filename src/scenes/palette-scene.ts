@@ -601,6 +601,13 @@ const toPaletteLut32 = (
   return newImage
 }
 
+// this is the winner for several reasons:
+// a) it's by far the fastest due to small table size helping with cache 
+//    locality, even though the arithmetic is more complex than eg toPaletteLut32
+// b) it uses the least memory, ~60kb compared to eg 16MB or 64MB for the other
+//    luts
+// c) it produces slightly better results, eg less information is lost in the 
+//    resultant output image
 const toPaletteLookup3 = (
   src: ImageData, colors: Uint32Array,
   chCount: number, channelLookup: Uint8Array, table: Uint8Array
@@ -615,6 +622,7 @@ const toPaletteLookup3 = (
 
   for (let y = 0; y < src.height; y++) {
     const row = y * src.width
+    
     for (let x = 0; x < src.width; x++) {
       const index = row + x
       const dataIndex = index * 4

@@ -26,7 +26,9 @@ export const createTerminal = () => {
   }
 
   const backspace = () => {
-    lineBuffer[lineBuffer.length - 1] = lineBuffer[lineBuffer.length - 1].slice(0, -1)
+    lineBuffer[lineBuffer.length - 1] = (
+      lineBuffer[lineBuffer.length - 1].slice(0, -1)
+    )
   }
 
   const view = (cols: number, rows: number) => {

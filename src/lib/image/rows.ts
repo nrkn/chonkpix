@@ -106,6 +106,9 @@ export const rectToRows = (
 // designed so that bresenham strokes can be used without gaps or overlaps.
 // consider passing the bresenham lines in instead of the triangle points.
 // could also be renamed and extended to fill any convex polygon.
+//
+// we should add a more sophisticated scanline that can handle complex polygons
+// with holes etc.
 export const triangleToRows = (
   a: T2, b: T2, c: T2
 ) => {
