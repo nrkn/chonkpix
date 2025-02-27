@@ -1,6 +1,6 @@
 import { Maybe, T2, T3, T4, T5, T6 } from './types.js';
-export declare const assrt: <T>(value: Maybe<T>, message?: string) => T;
 export declare const maybe: <T>(value: Maybe<T>) => value is T;
+export declare const assrt: <T>(value: Maybe<T>, message?: string) => T;
 export declare const assrtInt: (value: number, message?: string) => number;
 export declare const assrtPositive: (value: number, message?: string) => number;
 export declare const t2Factory: <T>(defaultValue: T) => (a?: T, b?: T) => T2<T>;

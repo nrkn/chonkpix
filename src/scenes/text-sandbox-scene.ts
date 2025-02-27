@@ -6,6 +6,7 @@ import { BmpFontM, FontPoints } from '../lib/bmpfont/types.js'
 import { createColor } from '../lib/image/color.js'
 import { fill, fillIndices } from '../lib/image/fill.js'
 import { loadImage } from '../lib/image/load.js'
+import { PrintableKey, printableKeySet } from '../lib/io/const.js'
 import { findSizeSlug, parseSizeSlug } from '../lib/slug.js'
 import { createTerminal } from '../lib/term/index.js'
 import { Scene, State } from '../lib/types.js'
@@ -165,7 +166,7 @@ export const textSandboxScene = (): Scene => {
 
       // mouse
 
-      const wheel = state.mouse.getWheel()
+      const wheel = state.mouse.takeWheel()
       const zoom = state.view.getZoom()
 
       if (wheel < 0) {
@@ -254,61 +255,3 @@ export const textSandboxScene = (): Scene => {
 
   return { init, update, quit, setActive }
 }
-
-// keyboard handling
-
-// this subset should be fine to start with
-
-const modifierKeys = [
-  'Alt', 'AltGraph', 'CapsLock', 'Control', 'NumLock', 'ScrollLock', 'Shift'
-] as const
-
-const whitespaceKeys = [
-  'Enter', 'Tab', ' '
-] as const
-
-const navigationKeys = [
-  'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'End', 'Home', 'PageDown',
-  'PageUp'
-] as const
-
-const editingKeys = [
-  'Backspace', 'Delete', 'Insert'
-] as const
-
-// nb Escape is used by the scene to exit so we'll never be able to trap it,
-// but leaving it in anyway in case things change in future
-const uiKeys = [
-  'Escape', 'Help', 'Pause'
-] as const
-
-const alphaKeys = [
-  'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
-  'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
-  'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
-  'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'
-] as const
-
-const numberKeys = [
-  '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'
-] as const
-
-const symbolKeys = [
-  '!', '"', '#', '$', '%', '&', '\'', '(', ')', '*', '+', ',', '-',
-  '.', '/', ':', ';', '<', '=', '>', '?', '@', '[', '\\', ']', '^',
-  '_', '`', '{', '|', '}', '~'
-] as const
-
-// eg keys that will be echoed to the terminal, not control or special keys
-const printableKeys = [
-  ...alphaKeys, ...numberKeys, ...symbolKeys, ' '
-] as const
-
-type PrintableKey = typeof printableKeys[number]
-
-const printableKeySet = new Set(printableKeys)
-
-const allKeys = [
-  ...modifierKeys, ...whitespaceKeys, ...navigationKeys, ...editingKeys,
-  ...uiKeys, ...alphaKeys, ...numberKeys, ...symbolKeys
-] as const

@@ -66,7 +66,7 @@ const state: State = {
     getButtons: () => mouseButtons,
     getX: () => frameMouseX,
     getY: () => frameMouseY,
-    getWheel: () => {
+    takeWheel: () => {
       // destructive read
       // otherwise the delta is retained from frame to frame
       // we could have made it so the consumer can explicitly clear it after use
@@ -106,6 +106,7 @@ const preventDefaults = new Set<string>(['Tab'])
 
 const keyDown = (event: KeyboardEvent) => {
   keys[event.key] = true
+  keyPresses.push(event.key)
 
   if (preventDefaults.has(event.key)) {
     event.preventDefault()
@@ -117,26 +118,9 @@ const keyDown = (event: KeyboardEvent) => {
 const keyUp = (event: KeyboardEvent) => {
   keys[event.key] = false
 
-  // forward non-printable keys to keyPress
-  if (event.key === 'Backspace') {
-    keyPress(event)
-
-    return
-  }
-
   // any others in future
 
   // 
-
-  if (preventDefaults.has(event.key)) {
-    event.preventDefault()
-
-    return false
-  }
-}
-
-const keyPress = (event: KeyboardEvent) => {
-  keyPresses.push(event.key)
 
   if (preventDefaults.has(event.key)) {
     event.preventDefault()
@@ -258,7 +242,6 @@ export const start = async (scene: Scene) => {
 
   frameCanvas.addEventListener('keydown', keyDown)
   frameCanvas.addEventListener('keyup', keyUp)
-  frameCanvas.addEventListener('keypress', keyPress)
 
   frameCanvas.addEventListener('mousemove', mouseMove)
   frameCanvas.addEventListener('wheel', mouseWheel)
@@ -284,7 +267,6 @@ const halt = () => {
 
   frameCanvas.removeEventListener('keydown', keyDown)
   frameCanvas.removeEventListener('keyup', keyUp)
-  frameCanvas.removeEventListener('keypress', keyPress)
 
   frameCanvas.removeEventListener('mousemove', mouseMove)
   frameCanvas.removeEventListener('wheel', mouseWheel)

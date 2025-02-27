@@ -5,11 +5,9 @@ import { State } from './lib/types.js'
 import { splitScene } from './scenes/split-scene.js'
 import { paletteSandboxScene } from './scenes/palette-scene.js'
 
-let isSwitchBetweenScenes = false
-
 const debug = debugScene()
 const text = textSandboxScene()
-const split = splitScene(text,debug)
+const split = splitScene(text, debug)
 const pal = paletteSandboxScene()
 
 const { quit: debugQuit } = debug
@@ -18,20 +16,22 @@ const { quit: splitQuit } = split
 const { quit: palQuit } = pal
 
 // use this for switching between full screen exclusive scenes:
-// const scenes = [
-//   [debug, debugQuit],
-//   [text, textQuit]
-// ] as const
+const scenes = [
+  [text, textQuit],
+  [debug, debugQuit],  
+  [pal, palQuit]
+] as const
 
 // or this for split screen scenes:
 // const scenes = [
 //   [split, splitQuit]
 // ] as const
 
-const scenes = [
-  [ pal, palQuit ]
-] as const
- 
+// or this for a single scene:
+// const scenes = [
+//   [ pal, palQuit ]
+// ] as const
+
 let sceneIndex = 0
 
 const onQuit = async (state: State) => {
@@ -41,25 +41,25 @@ const onQuit = async (state: State) => {
 
   await baseQuit(state)
 
-  if( isSwitchBetweenScenes ){
-    sceneIndex++
+  sceneIndex++
 
-    if (sceneIndex >= scenes.length) {
-      sceneIndex = 0
-    }
-  
-    sceneData = scenes[sceneIndex]
-
-    console.log( 'Switching to scene', sceneIndex )
-  } else {
-    console.log( 'Restarting current scene')
+  if (sceneIndex >= scenes.length) {
+    sceneIndex = 0
   }
+
+  sceneData = scenes[sceneIndex]
+
+  console.log('Switching to scene', sceneIndex)
 
   start(sceneData[0]).catch(console.error)
 }
 
-//debug.quit = onQuit
-//text.quit = onQuit
+// when using split, leave all except split commented out
+// when using a single scene, leave the others commented out
+// when switching between scenes, uncomment all participants
+
+debug.quit = onQuit
+text.quit = onQuit
 //split.quit = onQuit
 pal.quit = onQuit
 

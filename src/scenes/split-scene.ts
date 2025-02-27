@@ -194,7 +194,7 @@ const disableIo = (state: State) => {
   state.getKeys = () => ({})
   state.getKeyPresses = () => []
   state.mouse.getButtons = () => ({})
-  state.mouse.getWheel = () => 0
+  state.mouse.takeWheel = () => 0
 }
 
 // reattaches the parent state's io to the child state
@@ -202,7 +202,7 @@ const enableIo = (state: State, parentState: State) => {
   state.getKeys = parentState.getKeys
   state.getKeyPresses = parentState.getKeyPresses
   state.mouse.getButtons = parentState.mouse.getButtons
-  state.mouse.getWheel = parentState.mouse.getWheel
+  state.mouse.takeWheel = parentState.mouse.takeWheel
 }
 
 // create a new wrapped state object with its own buffer

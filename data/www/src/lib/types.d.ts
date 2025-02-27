@@ -5,7 +5,7 @@ export type State = {
         getButtons: () => Record<number, boolean>;
         getX: () => number;
         getY: () => number;
-        getWheel: () => number;
+        takeWheel: () => number;
         isInBounds: () => boolean;
     };
     time: {

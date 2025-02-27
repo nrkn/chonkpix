@@ -3,16 +3,9 @@
 a stupidly simple chonky pixel engine
 
 defers pretty much everything to the scene, just provides a basic harness
-for handling input, timing, rendering etc
+for interacting with the browser, handling input, timing, rendering etc
 
-extensive lib for pixel bashing etc
-
-this is pretty flexible - for example you can have multiple scenes 
-concurrently by having a single scene act as a manager and dispatching to
-its child scenes, intercepting the main state and passing decorated versions
-to the children so that mouse is relative to the child scene position, they
-can have their own frame buffer which gets blitted to the main one, keys and
-mouse only go to the active scene etc etc
+includes extensive lib for pixel bashing etc
 
 ## done
 
@@ -32,6 +25,7 @@ mouse only go to the active scene etc etc
   - image test scene
   - text/terminal test scene
   - scene compositor (just basic horizontal split for now)
+  - palette test scene
 - scene manager
   - move between scenes (basic, just toggle through list for now)
 - drawing library
@@ -39,7 +33,11 @@ mouse only go to the active scene etc etc
   - composite
   - fill
   - line 
-  - triangle
+  - triangles
+  - more
+- palettes
+  - generate palettes
+  - LUTs  
 - text/bitmap fonts
   - mono
   - proportional
@@ -52,10 +50,12 @@ mouse only go to the active scene etc etc
   - backspace
   - view 
     - take (cols,rows) and slice bottom of buffer to available space
+- come up with a name
+  - we went with chonkpix
 
 ## todo
 
-- come up with a name
+
 - engine
   - sound, via small sound library like ZzFX or similar
 - terminal
@@ -83,5 +83,24 @@ don't do these while everything is changing around all the time!
 
 ## MIT License
 
-- add license text
+MIT License
 
+Copyright (c) 2025 Nik Coughlin
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

@@ -316,7 +316,9 @@ export const paletteSandboxScene = (): Scene => {
     // temp 
     if (isDisableUpdate) return
 
-    const wheel = state.mouse.getWheel()
+    // handle io
+
+    const wheel = state.mouse.takeWheel()
     const zoom = state.view.getZoom()
 
     if (wheel < 0) {
@@ -324,6 +326,19 @@ export const paletteSandboxScene = (): Scene => {
     } else if (wheel > 0) {
       state.view.setZoom( zoom - 1 )
     }
+
+    const keys = state.getKeys()
+
+    if (keys['Escape']) {
+      state.setRunning(false)
+
+      // consume the key
+      keys['Escape'] = false
+
+      return
+    }
+
+    //
 
     const buffer = state.view.getBuffer()
 
@@ -622,7 +637,7 @@ const toPaletteLookup3 = (
 
   for (let y = 0; y < src.height; y++) {
     const row = y * src.width
-    
+
     for (let x = 0; x < src.width; x++) {
       const index = row + x
       const dataIndex = index * 4

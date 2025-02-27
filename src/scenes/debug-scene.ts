@@ -153,7 +153,7 @@ export const debugScene = (): Scene => {
       polySides = Math.min(Math.max(polySides, minPolySides), maxPolySides)
 
       // capture a reference - it is a destructive read
-      const wheel = state.mouse.getWheel()
+      const wheel = state.mouse.takeWheel()
       const zoom = state.view.getZoom()
 
       if (wheel < 0) {
