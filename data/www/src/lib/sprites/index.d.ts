@@ -1,3 +1,3 @@
-import { Spritesheet } from './types.js';
-export declare const createSpriteSheet: (image: ImageData, cellW: number, cellH: number, names?: string[], gap?: number, padding?: number) => Spritesheet;
-export declare const getSpriteIndex: (sheet: Spritesheet, spriteName: string) => number;
+import { TileSheet } from './types.js';
+export declare const createTileSheet: (image: ImageData, cellW: number, cellH: number, names?: string[], gap?: number, padding?: number) => TileSheet;
+export declare const getTileIndex: (sheet: TileSheet, tileName: string) => number;

@@ -1,11 +1,10 @@
-import { render } from '../lib/engine.js'
 import { colorToRgb, createColor, createColor24 } from '../lib/image/color.js'
 import { createImage } from '../lib/image/create.js'
 import { fill } from '../lib/image/fill.js'
 import { loadImage } from '../lib/image/load.js'
 import { resize } from '../lib/image/resize.js'
 import { Maybe, Scene, State, T2 } from '../lib/types.js'
-import { maybe } from '../lib/util.js'
+import { maybe, wait } from '../lib/util.js'
 
 import {
   GeneratedPalette, generatePalette,
@@ -101,7 +100,7 @@ export const paletteSandboxScene = (): Scene => {
     const progress = (total: number) => {
       const step = progressBarWidth / total
 
-      return (i: number) => {
+      return async (i: number) => {
         fill(
           buffer,
           createColor(0x66, 0x66, 0x66),
@@ -116,7 +115,7 @@ export const paletteSandboxScene = (): Scene => {
           [progressBarX, progressBarY, width, progressBarHeight]
         )
 
-        render()
+        await wait()
       }
     }
 
@@ -194,8 +193,7 @@ export const paletteSandboxScene = (): Scene => {
 
     console.log('generated palette lookups')
 
-    p(0)
-    await render()
+    await p(0)
 
     const pstep = numColors24 / stepCount
     let cstep = pstep
@@ -232,9 +230,7 @@ export const paletteSandboxScene = (): Scene => {
       if (i >= cstep) {
         cstep += pstep
         pval++
-        p(pval)
-
-        await render()
+        await p(pval)
       }
     }
 

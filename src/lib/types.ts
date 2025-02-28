@@ -41,3 +41,5 @@ export type T6<T = number> = [T, T, T, T, T, T]
 export type Maybe<T> = T | null | undefined
 
 export type SizeSlug = `${ number }x${ number}`
+
+export type Orientation = 'landscape' | 'portrait'

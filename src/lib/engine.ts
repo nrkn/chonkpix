@@ -13,6 +13,7 @@ let currentScene: Maybe<Scene>
 
 let running = false
 let rafId: number
+let isReady = false
 
 // io
 
@@ -205,16 +206,6 @@ export const takeMouse = () => {
   frameCanvas.classList.toggle('hide-cursor', true)
 }
 
-// hard render
-// in case you want to display something immediately, eg if you have a long
-// running init and want to show progress or etc
-export const render = async () => {
-  frameCtx.putImageData(frameBuffer, 0, 0)
-
-  // we still have to let the event loop run or it won't show anything
-  await wait()
-}
-
 // runner:
 
 // initialise the engine with a scene
@@ -253,14 +244,18 @@ export const start = async (scene: Scene) => {
 
   running = true
 
+  rafId = requestAnimationFrame(tick)
+
   await scene.init(state)
 
-  rafId = requestAnimationFrame(tick)
+  isReady = true
 }
 
 // tidy everything up
 const halt = () => {
   running = false
+  isReady = false
+
   cancelAnimationFrame(rafId)
 
   removeEventListener('resize', resize)
@@ -311,7 +306,7 @@ const tick = (time: number) => {
   frameTime = time - lastTime
   lastTime = time
 
-  if (currentScene) currentScene.update(state)
+  if (currentScene && isReady) currentScene.update(state)
 
   // scene may have sent a quit signal
   if (!running) {

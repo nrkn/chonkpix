@@ -1,4 +1,4 @@
-import { Maybe, T2, T3, T4, T5, T6 } from './types.js'
+import { Maybe, Orientation, T2, T3, T4, T5, T6 } from './types.js'
 
 export const maybe = <T>(value: Maybe<T>): value is T =>
   value !== null && value !== undefined
@@ -56,6 +56,9 @@ export const lerp = (a: number, b: number, t: number) => a + (b - a) * t
 
 export const wait = (ms = 0) => new Promise(resolve => setTimeout(resolve, ms))
 
+export const orientation = (w: number, h: number): Orientation =>
+  w >= h ? 'landscape' : 'portrait'
+
 // for debugging - eg when inside a raf - we only want first few logs, not for
 // it to keep spewing multiple logs out every frame
 export const limitedLogger = (maxLogs = 10, logger = console.log) => {
@@ -76,7 +79,7 @@ export const limitedLogger = (maxLogs = 10, logger = console.log) => {
   }
 
   const log = (...data: any[]) => {
-    if (paused || (logs === maxLogs)) {
+    if (paused || (logs >= maxLogs)) {
       return
     }
 

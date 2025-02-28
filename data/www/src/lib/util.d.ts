@@ -1,4 +1,4 @@
-import { Maybe, T2, T3, T4, T5, T6 } from './types.js';
+import { Maybe, Orientation, T2, T3, T4, T5, T6 } from './types.js';
 export declare const maybe: <T>(value: Maybe<T>) => value is T;
 export declare const assrt: <T>(value: Maybe<T>, message?: string) => T;
 export declare const assrtInt: (value: number, message?: string) => number;
@@ -15,6 +15,7 @@ export declare const t5N: (a?: number, b?: number, c?: number, d?: number, e?: n
 export declare const t6N: (a?: number, b?: number, c?: number, d?: number, e?: number, f?: number) => T6<number>;
 export declare const lerp: (a: number, b: number, t: number) => number;
 export declare const wait: (ms?: number) => Promise<unknown>;
+export declare const orientation: (w: number, h: number) => Orientation;
 export declare const limitedLogger: (maxLogs?: number, logger?: (...data: any[]) => void) => {
     pause: () => void;
     resume: () => void;
