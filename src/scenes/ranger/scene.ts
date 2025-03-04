@@ -135,5 +135,9 @@ export const rangerScene = (): Scene => {
     vstate = null
   }
 
-  return { init, update, quit }
+  const setActive = (active: boolean) => {
+    isActive = active
+  }
+
+  return { init, update, quit, setActive }
 }
