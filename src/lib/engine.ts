@@ -1,6 +1,5 @@
 import { createImage } from './image/create.js'
 import { Maybe, Scene, State } from './types.js'
-import { wait } from './util.js'
 
 // chonkpix
 // a stupidly simple chonky pixel engine
@@ -44,7 +43,7 @@ let frameTime: number
 
 // view
 
-const minZoom = 2
+const minZoom = 1
 const maxZoom = 16
 
 let zoom = 5
@@ -90,7 +89,7 @@ const state: State = {
     getZoom: () => zoom,
     setZoom: (value: number) => {
       zoom = Math.max(minZoom, Math.min(maxZoom, value))
-      resize()
+      resized()
     },
     getBuffer: () => frameBuffer
   },
@@ -184,7 +183,7 @@ const mouseEnter = () => {
   cursorInBounds = true
 }
 
-const resize = () => {
+const resized = () => {
   frameW = Math.floor(innerWidth / zoom)
   frameH = Math.floor(innerHeight / zoom)
 
@@ -227,9 +226,9 @@ export const start = async (scene: Scene) => {
 
   frameCtx = frameCanvas.getContext('2d')!
 
-  resize()
+  resized()
 
-  addEventListener('resize', resize)
+  addEventListener('resize', resized)
 
   frameCanvas.addEventListener('keydown', keyDown)
   frameCanvas.addEventListener('keyup', keyUp)
@@ -258,7 +257,7 @@ const halt = () => {
 
   cancelAnimationFrame(rafId)
 
-  removeEventListener('resize', resize)
+  removeEventListener('resize', resized)
 
   frameCanvas.removeEventListener('keydown', keyDown)
   frameCanvas.removeEventListener('keyup', keyUp)

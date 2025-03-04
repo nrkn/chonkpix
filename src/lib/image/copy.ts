@@ -8,3 +8,6 @@ export const copy = (src: ImageData, rect: T4): ImageData => {
 
   return blit(src, createImage(w, h), [x, y, w, h, 0, 0])
 }
+
+export const clone = (src: ImageData) =>
+  createImage(src.width, src.height, src.data.slice())

@@ -62,3 +62,34 @@ export const blitRows = (
     dest.data.set(srcPixels, destIndex)
   }
 }
+
+// when the source and dest have the same width, and you want to blit a number 
+// of full rows from one to the other, you can do it in a single copy
+export const blitFullWidth = (
+  src: ImageData, dest: ImageData, sy: number, sh: number, dy: number
+) => {
+  if (src.width !== dest.width) {
+    throw Error('Source and destination must have the same width')
+  }
+
+  if (sy < 0) {
+    sh += sy
+    dy -= sy
+    sy = 0
+  }
+
+  if (sy + sh > src.height) {
+    sh = src.height - sy
+  }
+
+  if (dy + sh > dest.height) {
+    sh = dest.height - dy
+  }
+
+  const srcIndex = sy * src.width * 4
+  const srcSize = sh * src.width * 4
+
+  const destIndex = dy * dest.width * 4
+
+  dest.data.set(src.data.subarray(srcIndex, srcIndex + srcSize), destIndex)
+}
