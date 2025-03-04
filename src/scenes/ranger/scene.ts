@@ -48,17 +48,17 @@ export const rangerScene = (): Scene => {
 
     const { width, height } = buffer
 
-    if (lastW !== width || lastH !== height) {
+    if (fstate.lastW !== width || fstate.lastH !== height) {
       invalidate(width, height)
-      lastW = width
-      lastH = height
+      fstate.lastW = width
+      fstate.lastH = height
     }
 
     const tileCol = fstate.cameraX + vstate.colLeft
     const tileRow = fstate.cameraY + vstate.rowTop
 
     setIndices(
-      deps.tileMap, vstate.currIndices, vstate.animated,
+      deps.tileMap, vstate.currIndices,
       tileCol, tileRow, vstate.cols, vstate.rows,
       elapsed, emptyId
     )
@@ -120,9 +120,6 @@ export const rangerScene = (): Scene => {
 
     // always redraw the player
     composite(deps.sprites.image, buffer, [...playerRect, cvx, cvy])
-
-    fstate.moveCols = 0
-    fstate.moveRows = 0
 
     // show fps
     drawFps(state, deps.font, width, buffer, deps.fontPts)

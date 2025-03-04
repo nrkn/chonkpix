@@ -31,33 +31,18 @@ export const rangerInit = async (state: State) => {
   const fontPts = fontImageToPoints(font)
 
   const prevRectIndices = new Map<number, number>()
-  const animatedTileIndices = new Set<number>()
 
-  for (let y = 0; y < tileMap.height; y++) {
-    for (let x = 0; x < tileMap.width; x++) {
-      const i = y * tileMap.width + x
-      const cell = tileMap.data[i]
-
-      if (typeof cell === 'function') {
-        animatedTileIndices.add(i)
-      }
-    }
-  }
-
-  const buffer = state.view.getBuffer()
-
-  const lastW = buffer.width
-  const lastH = buffer.height
+  const lastW = 0
+  const lastH = 0
 
   const deps: RangerDeps = {
     tiles, sprites, font, fontPts, tileMap, blocking,
-    playerAnimLeft, playerAnimRight, animatedTileIndices
+    playerAnimLeft, playerAnimRight
   }
 
   const fstate: RangerState = {
     facing: 'right',
     cameraX, cameraY, lastW, lastH,
-    moveCols: 0, moveRows: 0,
     prevRectIndices
   }
 

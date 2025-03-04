@@ -1,7 +1,6 @@
 import { BmpFontM, FontPoints } from '../../lib/bmpfont/types.js';
 import { AnimationFrame, TileSheet } from '../../lib/sprites/types.js';
 import { Maybe } from '../../lib/types.js';
-import { MOVE_DOWN, MOVE_LEFT, MOVE_NONE, MOVE_RIGHT, MOVE_UP } from './const.js';
 export type AnimCell = (now: number) => Maybe<number>;
 export type TileMapCell = number | AnimCell;
 export type TileMap = {
@@ -22,7 +21,6 @@ export type VariationTile = [
     count: number
 ];
 export type SpanTile = [type: 'span', name: string, id: number, count: number];
-export type Move = (typeof MOVE_NONE | typeof MOVE_UP | typeof MOVE_RIGHT | typeof MOVE_DOWN | typeof MOVE_LEFT);
 export type RangerDeps = {
     tiles: TileSheet;
     sprites: TileSheet;
@@ -32,7 +30,6 @@ export type RangerDeps = {
     blocking: Set<TileMapCell>;
     playerAnimLeft: (now: number) => Maybe<number>;
     playerAnimRight: (now: number) => Maybe<number>;
-    animatedTileIndices: Set<number>;
 };
 export type RangerState = {
     facing: 'left' | 'right';
@@ -40,8 +37,6 @@ export type RangerState = {
     cameraY: number;
     lastW: number;
     lastH: number;
-    moveCols: number;
-    moveRows: number;
     prevRectIndices: Map<number, number>;
 };
 export type ViewState = {
@@ -53,5 +48,4 @@ export type ViewState = {
     rowTop: number;
     prevIndices: Maybe<number>[];
     currIndices: Maybe<number>[];
-    animated: Set<number>;
 };

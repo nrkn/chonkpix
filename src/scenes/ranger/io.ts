@@ -18,16 +18,15 @@ export const rangerIo = (state: State, deps: RangerDeps, fs: RangerState) => {
 
   if (wheel < 0) {
     state.view.setZoom(zoom + 1)
-    fs.prevRectIndices.clear()
+    fs.lastW = 0
+    fs.lastH = 0
   } else if (wheel > 0) {
     state.view.setZoom(zoom - 1)
-    fs.prevRectIndices.clear()
+    fs.lastW = 0
+    fs.lastH = 0
   }
 
   const presses = state.getKeyPresses()
-
-  fs.moveCols = 0
-  fs.moveRows = 0
 
   for (const key of presses) {
     let ocx = fs.cameraX
@@ -35,22 +34,18 @@ export const rangerIo = (state: State, deps: RangerDeps, fs: RangerState) => {
 
     if (key.toLowerCase() === 'w' && fs.cameraY > 0) {
       fs.cameraY--
-      fs.moveRows--
     }
     if (key.toLowerCase() === 's' && fs.cameraY < deps.tileMap.height - 1) {
       fs.cameraY++
-      fs.moveRows++
     }
 
     if (key.toLowerCase() === 'a' && fs.cameraX > 0) {
       fs.cameraX--
       fs.facing = 'left'
-      fs.moveCols--
     }
     if (key.toLowerCase() === 'd' && fs.cameraX < deps.tileMap.width - 1) {
       fs.cameraX++
       fs.facing = 'right'
-      fs.moveCols++
     }
 
     // check blocking
@@ -61,8 +56,6 @@ export const rangerIo = (state: State, deps: RangerDeps, fs: RangerState) => {
     if (deps.blocking.has(cameraTile)) {
       fs.cameraX = ocx
       fs.cameraY = ocy
-      fs.moveCols = 0
-      fs.moveRows = 0
     }
   }
 

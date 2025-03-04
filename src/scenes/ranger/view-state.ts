@@ -17,8 +17,7 @@ export const viewState = (
     colLeft: 0,
     rowTop: 0,
     prevIndices: Array<Maybe<number>>(),
-    currIndices: Array<Maybe<number>>(),
-    animated: new Set<number>()
+    currIndices: Array<Maybe<number>>()
   }
 
   const invalidate = (w: number, h: number) => {
@@ -45,8 +44,6 @@ export const viewState = (
 
     state.colLeft = -colsPerSide
     state.rowTop = -rowsPerSide
-
-    state.animated.clear()
   }
 
   invalidate(width, height)
@@ -57,7 +54,6 @@ export const viewState = (
 export const setIndices = (
   tilemap: TileMap,
   indices: Maybe<number>[],
-  animated: Set<number>,
   x: number, y: number, w: number, h: number,
   elapsed: number, emptyId: number
 ) => {
@@ -82,7 +78,6 @@ export const setIndices = (
 
       if (typeof tile === 'function') {
         rectIndex = assrt(tile(elapsed), 'Expected rectIndex')
-        animated.add(valIndex)
       } else {
         rectIndex = tile
       }

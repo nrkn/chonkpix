@@ -1,6 +1,7 @@
 import {
   layoutTextLine, textLayoutToIndices
 } from '../../lib/bmpfont/layout.js'
+
 import { BmpFontM, FontPoints } from '../../lib/bmpfont/types.js'
 import { createColor } from '../../lib/image/color.js'
 import { fill, fillIndices } from '../../lib/image/fill.js'

@@ -4,8 +4,7 @@ import { textSandboxScene } from './scenes/text-sandbox-scene.js'
 import { State } from './lib/types.js'
 import { splitScene } from './scenes/split-scene.js'
 import { paletteSandboxScene } from './scenes/palette-scene.js'
-//import { rangerScene } from './scenes/ranger-scene.js'
-import { rangerScene } from './scenes/ranger/ranger-scene.js'
+import { rangerScene } from './scenes/ranger/scene.js'
 
 const debug = debugScene()
 const text = textSandboxScene()
