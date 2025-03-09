@@ -1,17 +1,19 @@
-import { 
-  getNeighboursCardinal, getNeighboursAll 
+import {
+  getNeighboursCardinal, getNeighboursAll
 } from '../../lib/geom/neighbours.js'
 
 import { pick, randInt } from '../../lib/random.js'
 import { animator } from '../../lib/sprites/animator.js'
 import { T2 } from '../../lib/types.js'
 import { assrt } from '../../lib/util.js'
-import { 
-  grasses, hut, mountains, rocks, ruins, sands, skeleton, trees, water 
+
+import {
+  grasses, hut, mountains, rocks, ruins, sands, skeleton, trees, water
 } from './tile-data.js'
 
 import { TileMap, TileMapCell } from './types.js'
 
+// doesn't have to be good, just has to be ok for testing
 export const generateMap = (width: number, height: number) => {
   const size = width * height
 

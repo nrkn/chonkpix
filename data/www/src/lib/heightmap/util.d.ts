@@ -1,0 +1,10 @@
+import { T3 } from '../types.js';
+import { Point3 } from '../voxel/types.js';
+import { Heightmap } from './types.js';
+export declare const enqueueNeighbours: (q: T3[], x: number, y: number, parentV: number) => void;
+export declare const minHeight: (heightmap: Heightmap) => number;
+export declare const maxHeight: (heightmap: Heightmap) => number;
+export declare const heightmapToImageData: (heightmap: Heightmap, isScaled?: boolean) => ImageData;
+export declare const normalizeHeightmap: (heightmap: Heightmap) => Heightmap;
+export declare const heightmapToPoint3: (heightmap: Heightmap) => Point3[];
+export declare const heightmapToString: (heightmap: Heightmap) => string;

@@ -32,21 +32,27 @@ export const rangerIo = (state: State, deps: RangerDeps, fs: RangerState) => {
     let ocx = fs.cameraX
     let ocy = fs.cameraY
 
-    if (key.toLowerCase() === 'w' && fs.cameraY > 0) {
+    const isLeft = key.toLowerCase() === 'a' || key === 'ArrowLeft'
+    const isRight = key.toLowerCase() === 'd' || key === 'ArrowRight'
+    const isUp = key.toLowerCase() === 'w' || key === 'ArrowUp'
+    const isDown = key.toLowerCase() === 's' || key === 'ArrowDown'
+
+    if (isUp && fs.cameraY > 0) {
       fs.cameraY--
     }
-    if (key.toLowerCase() === 's' && fs.cameraY < deps.tileMap.height - 1) {
+    if (isDown && fs.cameraY < deps.tileMap.height - 1) {
       fs.cameraY++
     }
 
-    if (key.toLowerCase() === 'a' && fs.cameraX > 0) {
+    if (isLeft && fs.cameraX > 0) {
       fs.cameraX--
-      fs.facing = 'left'
     }
-    if (key.toLowerCase() === 'd' && fs.cameraX < deps.tileMap.width - 1) {
+    if (isRight && fs.cameraX < deps.tileMap.width - 1) {
       fs.cameraX++
-      fs.facing = 'right'
     }
+
+    // change facing even if blocked/oob
+    fs.facing = isLeft ? 'left' : isRight ? 'right' : fs.facing
 
     // check blocking
     const cameraTile = deps.tileMap.data[

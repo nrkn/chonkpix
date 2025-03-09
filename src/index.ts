@@ -5,19 +5,21 @@ import { State } from './lib/types.js'
 import { splitScene } from './scenes/split-scene.js'
 import { paletteSandboxScene } from './scenes/palette-scene.js'
 import { rangerScene } from './scenes/ranger/scene.js'
+import { voxelScene } from './scenes/voxel-scene.js'
 
 const debug = debugScene()
 const text = textSandboxScene()
 const split = splitScene(text, debug)
 const pal = paletteSandboxScene()
-//const ranger = rangerScene()
 const ranger = rangerScene()
+const voxel = voxelScene()
 
 const { quit: debugQuit } = debug
 const { quit: textQuit } = text
 const { quit: splitQuit } = split
 const { quit: palQuit } = pal
 const { quit: rangerQuit } = ranger
+const { quit: voxelQuit } = voxel
 
 // use this for switching between full screen exclusive scenes:
 // const scenes = [
@@ -33,8 +35,9 @@ const { quit: rangerQuit } = ranger
 
 // or this for a single scene:
 const scenes = [
-  [ranger, rangerQuit]
+  //[ranger, rangerQuit]
   //[pal, palQuit]
+  [ voxel, voxelQuit ]
 ] as const
 
 let sceneIndex = 0
@@ -72,6 +75,7 @@ const onQuit = async (state: State) => {
 //text.quit = onQuit
 //split.quit = onQuit
 //pal.quit = onQuit
-ranger.quit = onQuit
+//ranger.quit = onQuit
+voxel.quit = onQuit
 
 start(scenes[sceneIndex][0]).catch(console.error)

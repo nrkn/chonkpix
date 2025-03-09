@@ -8,7 +8,7 @@ import { generateMap } from './map-gen.js'
 import { tileW, tileH, tileCols, tileRows } from './tile-data.js'
 import { RangerDeps, RangerState } from './types.js'
 
-export const rangerInit = async (state: State) => {
+export const rangerInit = async (_state: State) => {
   const tileSheet = await loadImage('scenes/ranger/tiles.png')
 
   const tiles = createTileSheet(tileSheet, tileW, tileH)

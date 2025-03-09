@@ -1,10 +1,10 @@
 import { T3, T4, T5 } from '../types.js'
 import { lerp } from '../util.js'
 
-export const createColor = (r: number, g: number, b: number, a = 255) =>
+export const createColor = (r: number, g = r, b = r, a = 255) =>
   (a << 24) | (b << 16) | (g << 8) | r
 
-export const createColor24 = (r: number, g: number, b: number) =>
+export const createColor24 = (r: number, g = r, b = r) =>
   (b << 16) | (g << 8) | r
 
 export const colorToRgba = (color: number): T4 => [
