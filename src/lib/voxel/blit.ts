@@ -9,22 +9,19 @@ import { Vox } from './types.js'
 export const blitVoxels = (
   imageData: ImageData,
   // assumed to be already sorted by z then y
-  voxels: Vox[],
-  dx = 0, dy = 0 // todo - use transfer instead of offset
+  voxels: Vox[]
 ) => {
   const view = new Uint32Array(imageData.data.buffer)
 
   for (let i = 0; i < voxels.length; i++) {
     const vox = voxels[i]
 
-    const dxLeft = vox[V_X] + dx
+    if (vox[V_X] < 0 || vox[V_X] >= imageData.width) continue
 
-    if (dxLeft < 0 || dxLeft >= imageData.width) continue
-
-    const dyTop = imageData.height - 1 - (vox[V_Y] + vox[V_Z]) + dy
+    const dyTop = imageData.height - 1 - (vox[V_Y] + vox[V_Z])
 
     if (dyTop >= 0 && dyTop < imageData.height) {
-      const topIndex = dyTop * imageData.width + dxLeft
+      const topIndex = dyTop * imageData.width + vox[V_X]
 
       view[topIndex] = vox[V_TOP]
     }
@@ -32,7 +29,7 @@ export const blitVoxels = (
     const dyFront = dyTop + 1
 
     if (dyFront >= 0 && dyFront < imageData.height) {
-      const frontIndex = dyFront * imageData.width + dxLeft
+      const frontIndex = dyFront * imageData.width + vox[V_X]
 
       view[frontIndex] = vox[V_FRONT]
     }

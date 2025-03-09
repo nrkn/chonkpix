@@ -2,6 +2,7 @@ import { generateHeightmap } from '../lib/heightmap/generate/index.js'
 import { flattenRect, lowerRect, raiseRect } from '../lib/heightmap/sculpt.js'
 import { heightmapToPoint3, maxHeight, minHeight, normalizeHeightmap } from '../lib/heightmap/util.js'
 import { randInt } from '../lib/random.js'
+import { fpsSceneHelper } from '../lib/scene/fps.js'
 import { exitOnEscape, zoomOnWheel } from '../lib/scene/io.js'
 import { Maybe, Scene, State } from '../lib/types.js'
 import { maybe } from '../lib/util.js'
@@ -12,13 +13,20 @@ import { Vox } from '../lib/voxel/types.js'
 const mapW = 256
 const mapH = 256
 
+const mapCx = mapW / 2
+const mapCy = mapH / 2
+
 export const voxelScene = (): Scene => {
   let isActive = false
   let voxels: Maybe<Vox[]>
   let dirty = true
+  let fpsHelper: Maybe<Scene>
 
   const init = async (state: State) => {
     voxels = generateVoxels()
+    fpsHelper = fpsSceneHelper()
+
+    await fpsHelper.init(state)
 
     isActive = true
   }
@@ -33,6 +41,7 @@ export const voxelScene = (): Scene => {
 
   const update = (state: State) => {
     if (!maybe(voxels)) throw Error('voxels not initialized')
+    if (!maybe(fpsHelper)) throw Error('fpsHelper not initialized')
 
     if (isActive) io(state)
 
@@ -41,12 +50,11 @@ export const voxelScene = (): Scene => {
     const buffer = state.view.getBuffer()
     const { width, height } = buffer
 
-    const dx = Math.floor((width - mapW) / 2)
-    const dy = Math.floor((height - mapH) / 2)
-
-    blitVoxels(buffer, voxels, dx, dy)
+    blitVoxels(buffer, voxels)
 
     dirty = false
+
+    fpsHelper.update(state)
   }
 
   const quit = async (_state: State) => {
