@@ -1,3 +1,4 @@
+import { progressControl } from '../lib/controls/progress.js'
 import { generateHeightmap } from '../lib/heightmap/generate/index.js'
 import { flattenRect, lowerRect, raiseRect } from '../lib/heightmap/sculpt.js'
 import { heightmapToPoint3, maxHeight, minHeight, normalizeHeightmap } from '../lib/heightmap/util.js'
@@ -10,8 +11,8 @@ import { blitVoxels } from '../lib/voxel/blit.js'
 import { createPlane, createWall } from '../lib/voxel/generate/create.js'
 import { Vox } from '../lib/voxel/types.js'
 
-const mapW = 256
-const mapH = 256
+const mapW = 192
+const mapH = 192
 
 const mapCx = mapW / 2
 const mapCy = mapH / 2
@@ -23,7 +24,7 @@ export const voxelScene = (): Scene => {
   let fpsHelper: Maybe<Scene>
 
   const init = async (state: State) => {
-    voxels = generateVoxels()
+    voxels = await generateVoxels(state)
     fpsHelper = fpsSceneHelper()
 
     await fpsHelper.init(state)
@@ -69,10 +70,28 @@ export const voxelScene = (): Scene => {
   return { init, update, quit, setActive }
 }
 
-const generateVoxels = () => {
-  const hm = normalizeHeightmap(generateHeightmap(mapW, mapH))
+const generateVoxels = async (state: State) => {
+  const buffer = state.view.getBuffer()
+  const { width, height } = buffer
+
+  // 100 ticks for hm generation
+  // 1 tick for sculpting
+  // 10 ticks for converting
+  // 10 ticks for sorting
+
+  const startHmTime = performance.now()
+
+  let hm = generateHeightmap(mapW, mapH, mapW * mapH * 8 )
+
+  hm = normalizeHeightmap(hm)
+
+  const endHmTime = performance.now()
+
+  console.log(`heightmap generation took ${endHmTime - startHmTime}ms`)
 
   // sculpt the heightmap
+
+  const startSculptTime = performance.now()
 
   const raisedHeight = raiseRect(hm, 96, 80, 16, 12)
 
@@ -92,6 +111,18 @@ const generateVoxels = () => {
     ...rRoof
   ]
 
+  const loweredHeight = lowerRect(hm, 32, 48, 12, 16)
+
+  const flattenedHeight = flattenRect(hm, 64, 64, 16, 24)
+
+  const endSculptTime = performance.now()
+
+  console.log(`sculpting took ${endSculptTime - startSculptTime}ms`)
+
+  // convert the buildings
+
+  const startConvertTime = performance.now()
+
   const rWallsVox = rWalls.map(([x, y, z]) => {
     let fcolor = 0
     let tcolor = 0
@@ -109,10 +140,6 @@ const generateVoxels = () => {
 
     return [x, y, z, tcolor, fcolor] as Vox
   })
-
-  const loweredHeight = lowerRect(hm, 32, 48, 12, 16)
-
-  const flattenedHeight = flattenRect(hm, 64, 64, 16, 24)
 
   // convert the hm
 
@@ -157,6 +184,14 @@ const generateVoxels = () => {
     return [x, y, z, hmTopColor, hmFrontColor] as Vox
   })
 
+  const endConvertTime = performance.now()
+
+  console.log(`converting took ${endConvertTime - startConvertTime}ms`)
+
+  // create and sort voxels
+
+  const startVoxTime = performance.now()
+
   const voxels: Vox[] = []
 
   voxels.push(...rWallsVox)
@@ -174,6 +209,13 @@ const generateVoxels = () => {
     // so that the "tops" of voxels overlay correctly
     return a[1] - b[1]
   })
+
+  const endVoxTime = performance.now()
+
+  console.log(`voxel creation took ${endVoxTime - startVoxTime}ms`)
+
+  console.log(`total time: ${endVoxTime - startHmTime}ms`)
+  console.log(`voxel count: ${voxels.length}`)
 
   return voxels
 }

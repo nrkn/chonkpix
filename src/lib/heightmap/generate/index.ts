@@ -9,7 +9,6 @@ export const generateHeightmap = (
   const data = new Uint8ClampedArray(size).fill(127)
   const heightmap: Heightmap = { width, height, data }
 
-
   for (let i = 0; i < times; i++) {
     const x = randInt(width)
     const y = randInt(height)
