@@ -117,3 +117,20 @@ export const pointsToIndices = (w: number, h: number, channels: number) =>
 
       return acc
     }, [] as number[])
+
+
+export const pset = (
+  image: ImageData, x: number, y: number, color: number
+) => {
+  const view = new Uint32Array(image.data.buffer)
+  const index = y * image.width + x
+
+  view[index] = color
+}
+
+export const pget = (image: ImageData, x: number, y: number) => {
+  const view = new Uint32Array(image.data.buffer)
+  const index = y * image.width + x
+
+  return view[index]
+}

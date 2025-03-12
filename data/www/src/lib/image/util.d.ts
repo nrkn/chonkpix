@@ -5,3 +5,5 @@ export declare const clampRect: (srcW: number, srcH: number, rect: T4) => T4;
 export declare const clampRows: <Arg>(rows: Row<Arg>[], w: number, h: number) => Row<Arg>[];
 export declare const clampRow: <Arg>(row: Row<Arg>, w: number, h: number) => Row<Arg> | null;
 export declare const pointsToIndices: (w: number, h: number, channels: number) => (points: T2[]) => number[];
+export declare const pset: (image: ImageData, x: number, y: number, color: number) => void;
+export declare const pget: (image: ImageData, x: number, y: number) => number;

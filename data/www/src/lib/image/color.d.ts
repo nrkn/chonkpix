@@ -8,3 +8,5 @@ export declare const hsvToRgb: (h: number, s: number, v: number) => T3;
 export declare const createColorStop: (r: number, g: number, b: number, a: number, stop: number) => T5;
 export declare const stopToRgba: (stop: T5) => T4;
 export declare const sampleGradient: (stops: T5[], at: number) => T4;
+export declare const rgbToHsl: ([r, g, b]: T3) => T3;
+export declare const hslToRgb: ([h, s, l]: T3) => T3;
