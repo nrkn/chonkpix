@@ -2,6 +2,12 @@
  
 a stupidly simple chonky pixel engine
 
+created for me to do experiments with pixel art, palettes, text rendering etc
+
+this is *not* designed to be the most performant or extensive 2D game engine!
+
+it is designed to be fun for me to use
+
 defers pretty much everything to the scene, just provides a basic harness
 for interacting with the browser, handling input, timing, rendering etc
 
@@ -50,11 +56,8 @@ includes extensive lib for pixel bashing etc
   - backspace
   - view 
     - take (cols,rows) and slice bottom of buffer to available space
-- come up with a name
-  - we went with chonkpix
 
 ## todo
-
 
 - engine
   - sound, via small sound library like ZzFX or similar
@@ -68,11 +71,11 @@ includes extensive lib for pixel bashing etc
   - very simple 'how to do things' while it is in flux
 - examples
   - just fun or to demo features at first
-- write rest of todo list - ref chat
+- write rest of todo list
 
 ## ideas/maybe todo
 
-- write ideas list - ref chat
+- write ideas list
 
 ## todo when stable
 
