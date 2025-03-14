@@ -13,15 +13,9 @@ export type Bicycle = BicycleUpdate & {
   wheelBase: number
 }
 
-export const createBicycle = () => {
-  const location: T2 = [0, 0]
-  const heading = 0
-  const speed = 0
-  const steerAngle = 0
-  const wheelBase = 0
-
-  return { location, heading, speed, steerAngle, wheelBase }
-}
+export const createBicycle = (
+  location: T2 = [0, 0], heading = 0, speed = 0, steerAngle = 0, wheelBase = 0
+): Bicycle => ({ location, heading, speed, steerAngle, wheelBase })
 
 export const frontWheel = (
   bicycle: Bicycle,
@@ -32,7 +26,6 @@ export const frontWheel = (
     bicycle.location[0] + center * cosHead,
     bicycle.location[1] + center * sinHead
   ]
-
 
 export const backWheel = (
   bicycle: Bicycle,

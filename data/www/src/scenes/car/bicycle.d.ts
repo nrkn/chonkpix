@@ -8,13 +8,7 @@ export type Bicycle = BicycleUpdate & {
     steerAngle: number;
     wheelBase: number;
 };
-export declare const createBicycle: () => {
-    location: T2;
-    heading: number;
-    speed: number;
-    steerAngle: number;
-    wheelBase: number;
-};
+export declare const createBicycle: (location?: T2, heading?: number, speed?: number, steerAngle?: number, wheelBase?: number) => Bicycle;
 export declare const frontWheel: (bicycle: Bicycle, center?: number, cosHead?: number, sinHead?: number) => T2;
 export declare const backWheel: (bicycle: Bicycle, center?: number, cosHead?: number, sinHead?: number) => T2;
 export declare const updateBicycle: (bicycle: Bicycle, delta: number) => BicycleUpdate;
