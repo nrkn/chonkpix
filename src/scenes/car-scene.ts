@@ -1,9 +1,12 @@
+import { createColor } from '../lib/image/color.js'
 import { createImage } from '../lib/image/create.js'
 import { fill } from '../lib/image/fill.js'
 import { loadImage } from '../lib/image/load.js'
+import { resize } from '../lib/image/resize.js'
 import { drawRotated } from '../lib/image/rotate.js'
 import { pset } from '../lib/image/util.js'
 import { debugTextSceneHelper } from '../lib/scene/debug-text.js'
+import { zoomOnWheel } from '../lib/scene/io.js'
 import { textTable } from '../lib/text/table-layout.js'
 import { Maybe, Scene, State } from '../lib/types.js'
 import { maybe } from '../lib/util.js'
@@ -56,6 +59,7 @@ const worldConfig: WorldConfig = {
 
 // derived from car and world config
 const deg90 = Math.PI / 2
+const deg270 = 3 * deg90
 
 const kmphScale = 900 * worldConfig.pixelsPerMeter
 
@@ -80,6 +84,8 @@ const minRevSpeed = -(maxSpeed * carConfig.revSpeedFactor)
 
 export const carScene = (): Scene => {
   let isActive = false
+  let lastW = 0
+  let lastH = 0
 
   let debugHelper: Maybe<Scene>
   let debugText: string[] = []
@@ -99,18 +105,23 @@ export const carScene = (): Scene => {
 
     //
 
-    track = await loadImage('scenes/car/track.png')
+    //track = await loadImage('scenes/car/track.png')
+    //track = await loadImage('scenes/car/track-huge.png')
+    track = await loadImage('scenes/car/track-huge-c.png')
 
-    carSprite = createImage(carW, carH)
+    // carSprite = createImage(carW, carH)
 
-    fill(carSprite, carColor)
-    pset(carSprite, 1, 0, headlightColor)
-    pset(carSprite, 3, 0, headlightColor)
+    // fill(carSprite, carColor)
+    // pset(carSprite, 1, 0, headlightColor)
+    // pset(carSprite, 3, 0, headlightColor)
+    carSprite = await loadImage('scenes/car/car.png')
 
-    const trackCx = Math.floor(track.width / 2)
-    const trackCy = Math.floor(track.height / 2)
+    //const trackCx = Math.floor(track.width / 2)
+    //const trackCy = Math.floor(track.height / 2)
+    const trackCx = 5082
+    const trackCy = 11438
 
-    car = createBicycle([trackCx, trackCy], 0, 0, 0, carConfig.wheelBase)
+    car = createBicycle([trackCx, trackCy], deg270, 0, 0, carConfig.wheelBase)
 
     isActive = true
   }
@@ -138,6 +149,11 @@ export const carScene = (): Scene => {
 
     if (keys['d'] || keys['D']) {
       turn = 1
+    }
+
+    if (zoomOnWheel(state)) {
+      lastW = 0
+      lastH = 0
     }
   }
 
@@ -202,7 +218,6 @@ export const carScene = (): Scene => {
     const updated = updateBicycle(car, delta)
 
     // we could check here for collision, that's why it's separate from car
-
     // todo - collision detection
 
     // if no collision, update car
@@ -215,9 +230,9 @@ export const carScene = (): Scene => {
     const { width, height } = buffer
 
     const vx = Math.floor(width / 2)
-    // we place the car three quarters of the way down the screen facing up,
+    // we place the car down the screen facing up,
     // so we can see more of the road ahead
-    const vy = Math.floor(height * 0.75)
+    const vy = Math.floor(height * 0.875)
 
     // draw the track, centered on the car, onto the view, rotated by -carHeading
     // and then deg90 to face "up"
@@ -228,7 +243,30 @@ export const carScene = (): Scene => {
     // draw the car, centered on the car, onto the view
     drawRotated(carSprite, carCx, carCy, buffer, vx, vy, car.steerAngle)
 
-    //
+    // mini map
+
+    const mmHeight = Math.floor(height / 2)
+
+    // scale to track.height
+    const mmScale = mmHeight / track.height
+
+    const mmWidth = Math.floor(track.width * mmScale)
+
+    const mmX = 2
+    const mmY = height - mmHeight - 2
+
+    resize(
+      track, buffer,
+      [0, 0, track.width, track.height],
+      [mmX, mmY, mmWidth, mmHeight]
+    )
+
+    const mmCarX = Math.floor(car.location[0] * mmScale) + mmX
+    const mmCarY = Math.floor(car.location[1] * mmScale) + mmY
+
+    const red = createColor(255, 0, 0)
+
+    pset(buffer, mmCarX, mmCarY, red)
 
     if (!maybe(debugHelper)) return
 
@@ -238,11 +276,11 @@ export const carScene = (): Scene => {
     const fpsText = `${fps} fps (${delta.toFixed(1)}ms)`
 
     const table = textTable([
-      ['carX:', `${car.location[0].toFixed(4)}`],
-      ['carY:', `${car.location[1].toFixed(4)}`],
-      ['carHeading:', `${car.heading.toFixed(4)}`],
-      ['carSpeed:', `${car.speed.toFixed(4)}`],
-      ['carSteerAngle:', `${car.steerAngle.toFixed(4)}`],
+      ['x:', `${car.location[0].toFixed(4)}`],
+      ['y:', `${car.location[1].toFixed(4)}`],
+      ['heading:', `${car.heading.toFixed(4)}`],
+      ['speed:', `${car.speed.toFixed(4)}`],
+      ['steer:', `${car.steerAngle.toFixed(4)}`],
       ['kmph:', `${kmph.toFixed(4)}`],
       ['turn:', `${turn}`],
       ['velocity:', `${velocity}`]

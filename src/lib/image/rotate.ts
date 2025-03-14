@@ -1,3 +1,6 @@
+import { T4 } from '../types.js'
+import { clampRect } from './util.js'
+
 export const drawRotated = (
   src: ImageData, srcCx: number, srcCy: number,
   dest: ImageData, destCx: number, destCy: number,
