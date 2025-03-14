@@ -1,6 +1,3 @@
-import { T4 } from '../types.js'
-import { clampRect } from './util.js'
-
 export const drawRotated = (
   src: ImageData, srcCx: number, srcCy: number,
   dest: ImageData, destCx: number, destCy: number,
@@ -41,6 +38,58 @@ export const drawRotated = (
         destData[destIndex + 1] = srcData[srcIndex + 1]
         destData[destIndex + 2] = srcData[srcIndex + 2]
         destData[destIndex + 3] = srcData[srcIndex + 3]
+      }
+    }
+  }
+
+  return dest
+}
+
+export const drawRotatedAndScaled = (
+  src: ImageData, srcCx: number, srcCy: number,
+  dest: ImageData, destCx: number, destCy: number,
+  radians: number, srcScale = 1
+) => {
+  const srcWidth = src.width
+  const srcHeight = src.height
+  const destWidth = dest.width
+  const destHeight = dest.height
+
+  const cos = Math.cos(radians)
+  const sin = Math.sin(radians)
+
+  const [minX, minY, maxX, maxY] = computeRotatedBoundingBox(
+    srcWidth, srcHeight, srcCx, srcCy, destCx, destCy, radians,
+    destWidth, destHeight
+  )
+
+  for (let dy = minY; dy < maxY; dy++) {
+    for (let dx = minX; dx < maxX; dx++) {
+      const x = dx - destCx
+      const y = dy - destCy
+
+      // const sxFloat = x * cos + y * sin + srcCx
+      // const syFloat = -x * sin + y * cos + srcCy
+
+      // const sx = Math.round(sxFloat / srcScale)
+      // const sy = Math.round(syFloat / srcScale)
+      const scaledX = (x / srcScale)
+      const scaledY = (y / srcScale)
+
+      const sxFloat = scaledX * cos + scaledY * sin + srcCx
+      const syFloat = -scaledX * sin + scaledY * cos + srcCy
+
+      const sx = Math.round(sxFloat)
+      const sy = Math.round(syFloat)
+
+      if (sx >= 0 && sx < srcWidth && sy >= 0 && sy < srcHeight) {
+        const srcIndex = (sy * srcWidth + sx) * 4
+        const destIndex = (dy * destWidth + dx) * 4
+
+        dest.data[destIndex + 0] = src.data[srcIndex + 0]
+        dest.data[destIndex + 1] = src.data[srcIndex + 1]
+        dest.data[destIndex + 2] = src.data[srcIndex + 2]
+        dest.data[destIndex + 3] = src.data[srcIndex + 3]
       }
     }
   }

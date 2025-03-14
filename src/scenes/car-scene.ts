@@ -3,7 +3,7 @@ import { createImage } from '../lib/image/create.js'
 import { fill } from '../lib/image/fill.js'
 import { loadImage } from '../lib/image/load.js'
 import { resize } from '../lib/image/resize.js'
-import { drawRotated } from '../lib/image/rotate.js'
+import { drawRotated, drawRotatedAndScaled } from '../lib/image/rotate.js'
 import { pset } from '../lib/image/util.js'
 import { debugTextSceneHelper } from '../lib/scene/debug-text.js'
 import { zoomOnWheel } from '../lib/scene/io.js'
@@ -57,6 +57,11 @@ const worldConfig: WorldConfig = {
   globalFriction: 5
 }
 
+const minZoom = 0.5
+const maxZoom = 2
+
+const zoomDelta = maxZoom - minZoom
+
 // derived from car and world config
 const deg90 = Math.PI / 2
 const deg270 = 3 * deg90
@@ -107,7 +112,7 @@ export const carScene = (): Scene => {
 
     //track = await loadImage('scenes/car/track.png')
     //track = await loadImage('scenes/car/track-huge.png')
-    track = await loadImage('scenes/car/track-huge-c.png')
+    track = await loadImage('scenes/car/track-huge-c2.png')
 
     // carSprite = createImage(carW, carH)
 
@@ -118,8 +123,8 @@ export const carScene = (): Scene => {
 
     //const trackCx = Math.floor(track.width / 2)
     //const trackCy = Math.floor(track.height / 2)
-    const trackCx = 5082
-    const trackCy = 11438
+    const trackCx = 5411
+    const trackCy = 14696
 
     car = createBicycle([trackCx, trackCy], deg270, 0, 0, carConfig.wheelBase)
 
@@ -151,11 +156,13 @@ export const carScene = (): Scene => {
       turn = 1
     }
 
-    if (zoomOnWheel(state)) {
-      lastW = 0
-      lastH = 0
-    }
+    // if (zoomOnWheel(state)) {
+    //   lastW = 0
+    //   lastH = 0
+    // }
   }
+
+  let lastZoom = maxZoom
 
   const update = (state: State) => {
     if (!maybe(track)) throw Error('Expected track')
@@ -191,11 +198,11 @@ export const carScene = (): Scene => {
 
     if (turn) {
       // the slower we're going, the less we can turn
-      const speedFactor = Math.min(
-        1, Math.max(0, Math.abs(car.speed) / maxSpeed)
-      )
+      // const speedFactor = Math.min(
+      //   1, Math.max(0, Math.abs(car.speed) / maxSpeed)
+      // )
 
-      car.steerAngle += turn * delta * carConfig.turnRate * speedFactor
+      car.steerAngle += turn * delta * carConfig.turnRate// * speedFactor
 
       // enforce steering limits
       car.steerAngle = Math.max(
@@ -226,6 +233,23 @@ export const carScene = (): Scene => {
 
     //
 
+    // const zoom = Math.round(
+    //   minZoom + (1 - (Math.abs(car.speed) / maxSpeed)) * zoomDelta
+    // )
+
+    // if (zoom !== lastZoom) {
+    //   state.view.setZoom(zoom)
+
+    //   lastZoom = zoom
+    // }
+
+    const zoom = minZoom + (1 - (Math.abs(car.speed) / maxSpeed)) * zoomDelta
+
+
+
+
+    //
+
     const buffer = state.view.getBuffer()
     const { width, height } = buffer
 
@@ -236,12 +260,16 @@ export const carScene = (): Scene => {
 
     // draw the track, centered on the car, onto the view, rotated by -carHeading
     // and then deg90 to face "up"
-    drawRotated(
-      track, car.location[0], car.location[1], buffer, vx, vy,
-      -car.heading - deg90
+    drawRotatedAndScaled(
+      track,
+      car.location[0], car.location[1],
+      buffer, vx, vy,
+      -car.heading - deg90, zoom
     )
     // draw the car, centered on the car, onto the view
-    drawRotated(carSprite, carCx, carCy, buffer, vx, vy, car.steerAngle)
+    drawRotatedAndScaled(
+      carSprite, carCx, carCy, buffer, vx, vy, car.steerAngle, zoom
+    )
 
     // mini map
 
