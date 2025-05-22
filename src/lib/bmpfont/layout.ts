@@ -99,13 +99,13 @@ export const textLayoutToIndices = (
     const x = glyphLayout[1]
     const y = glyphLayout[2]
 
-    for( let i = 0; i < cpts.length; i++ ){
-      let [ px, py ] = cpts[i]
+    for (let i = 0; i < cpts.length; i++) {
+      let [px, py] = cpts[i]
 
       px = px + dx + x
       py = py + dy + y
 
-      if( px < 0 || px >= dest.width || py < 0 || py >= dest.height ) continue
+      if (px < 0 || px >= dest.width || py < 0 || py >= dest.height) continue
 
       const index = (py * dest.width + px) * channels
 
@@ -113,5 +113,42 @@ export const textLayoutToIndices = (
     }
   }
 
+  return indices
+}
+
+export const textLayoutToCharIndices = (
+  dest: ImageData, dx: number, dy: number, font: FontPoints, layout: BmpLayout,
+  channels = 1
+): number[][] => {
+  const indices: number[][] = []
+
+  for (let i = 0; i < layout.length; i++) {
+    const glyphLayout = layout[i]
+    const charCode = glyphLayout[0]
+    const cpts = font[charCode]
+
+    if (!cpts) continue
+
+    const x = glyphLayout[1]
+    const y = glyphLayout[2]
+
+    const charIndices: number[] = []
+
+    for (let i = 0; i < cpts.length; i++) {
+      let [px, py] = cpts[i]
+
+      px = px + dx + x
+      py = py + dy + y
+
+      if (px < 0 || px >= dest.width || py < 0 || py >= dest.height) continue
+
+      const index = (py * dest.width + px) * channels
+
+      charIndices.push(index)
+    }
+
+    indices.push(charIndices)
+  }
+  
   return indices
 }

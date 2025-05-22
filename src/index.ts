@@ -1,13 +1,14 @@
-import { debugScene } from './scenes/debug-scene.js'
+import { debugScene } from './scenes/sandbox/debug-scene.js'
 import { start } from './lib/engine.js'
-import { textSandboxScene } from './scenes/text-sandbox-scene.js'
+import { textSandboxScene } from './scenes/sandbox/text-sandbox-scene.js'
 import { State } from './lib/types.js'
-import { splitScene } from './scenes/split-scene.js'
-import { paletteSandboxScene } from './scenes/palette-scene.js'
-import { rangerScene } from './scenes/ranger/scene.js'
-import { voxelScene } from './scenes/voxel-scene.js'
-import { hslScene } from './scenes/hsl-scene.js'
-import { carScene } from './scenes/car-scene.js'
+import { splitScene } from './scenes/sandbox/split-scene.js'
+import { paletteSandboxScene } from './scenes/sandbox/palette-scene.js'
+import { rangerScene } from './scenes/sandbox/ranger/scene.js'
+import { voxelScene } from './scenes/sandbox/voxel-scene.js'
+import { hslScene } from './scenes/sandbox/hsl-scene.js'
+import { carScene } from './scenes/sandbox/car-scene.js'
+import { dosScene } from './scenes/sandbox/dos/dos-scene.js'
 
 const debug = debugScene()
 const text = textSandboxScene()
@@ -17,6 +18,7 @@ const ranger = rangerScene()
 const voxel = voxelScene()
 const hsl = hslScene()
 const car = carScene()
+const dos = dosScene()
 
 const { quit: debugQuit } = debug
 const { quit: textQuit } = text
@@ -26,6 +28,7 @@ const { quit: rangerQuit } = ranger
 const { quit: voxelQuit } = voxel
 const { quit: hslQuit } = hsl
 const { quit: carQuit } = car
+const { quit: dosQuit } = dos
 
 // use this for switching between full screen exclusive scenes:
 // const scenes = [
@@ -45,7 +48,9 @@ const scenes = [
   //[pal, palQuit]
   //[ voxel, voxelQuit ]
   //[hsl, hslQuit]
-  [car, carQuit]
+  //[car, carQuit]
+   //[text, textQuit]
+   [dos, dosQuit]
 ] as const
 
 let sceneIndex = 0
@@ -86,6 +91,7 @@ const onQuit = async (state: State) => {
 //ranger.quit = onQuit
 //voxel.quit = onQuit
 //hsl.quit = onQuit
-car.quit = onQuit
+//car.quit = onQuit
+dos.quit = onQuit
 
 start(scenes[sceneIndex][0]).catch(console.error)

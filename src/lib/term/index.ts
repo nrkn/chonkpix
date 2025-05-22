@@ -25,6 +25,14 @@ export const createTerminal = () => {
     append(value + '\n')
   }
 
+  const update = ( line: number, value: string) => {
+    if (line < 0 || line >= lineBuffer.length) {
+      throw Error('Line out of range')
+    }
+
+    lineBuffer[line] = value
+  }
+
   const backspace = () => {
     lineBuffer[lineBuffer.length - 1] = (
       lineBuffer[lineBuffer.length - 1].slice(0, -1)
@@ -56,6 +64,7 @@ export const createTerminal = () => {
     backspace,
     append,
     appendLine,
+    updateLine: update,
     view
   }
 
@@ -68,5 +77,6 @@ export type Terminal = {
   backspace: () => void
   append: (value: string) => void
   appendLine: (value?: string) => void
+  updateLine: (line: number, value: string) => void
   view: (cols: number, rows: number) => string[]
 }

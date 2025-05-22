@@ -46,7 +46,7 @@ let frameTime: number
 const minZoom = 1
 const maxZoom = 16
 
-let zoom = 5
+let zoom = 3
 
 let frameW: number
 let frameH: number
