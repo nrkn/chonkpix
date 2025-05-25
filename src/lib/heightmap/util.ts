@@ -2,7 +2,7 @@ import { createColor } from '../image/color.js'
 import { createImage } from '../image/create.js'
 import { T3 } from '../types.js'
 import { Point3 } from '../voxel/types.js'
-import { Heightmap } from './types.js'
+import { Heightmap, HeightmapAny } from './types.js'
 
 export const enqueueNeighbours = (
   q: T3[], x: number, y: number, parentV: number
@@ -13,11 +13,14 @@ export const enqueueNeighbours = (
   q.push([x, y + 1, parentV])
 }
 
-export const minHeight = (heightmap: Heightmap) => Math.min(...heightmap.data)
+export const minHeight = (heightmap: HeightmapAny) => Math.min(...heightmap.data)
 
-export const maxHeight = (heightmap: Heightmap) => Math.max(...heightmap.data)
+export const maxHeight = (heightmap: HeightmapAny) => Math.max(...heightmap.data)
 
-export const heightmapToImageData = (heightmap: Heightmap, isScaled = false) => {
+export const hmU8ToImageData = (
+  heightmap: Heightmap<Uint8ClampedArray | Uint8Array>,
+  isScaled = false
+) => {
   const { width, height, data } = heightmap
   const size = width * height
 
@@ -48,7 +51,7 @@ export const heightmapToImageData = (heightmap: Heightmap, isScaled = false) => 
 }
 
 // make the lowest value === 0
-export const normalizeHeightmap = (heightmap: Heightmap) => {
+export const normalizeHmU8C = (heightmap: Heightmap) => {
   const min = minHeight(heightmap)
   const { width, height, data } = heightmap
   const size = width * height
@@ -66,7 +69,7 @@ export const normalizeHeightmap = (heightmap: Heightmap) => {
   return result
 }
 
-export const heightmapToPoint3 = (heightmap: Heightmap): Point3[] => {
+export const heightmapToPoint3 = (heightmap: HeightmapAny): Point3[] => {
   const { width, height, data } = heightmap
 
   const vox: Point3[] = []
@@ -87,7 +90,7 @@ export const heightmapToPoint3 = (heightmap: Heightmap): Point3[] => {
   return vox
 }
 
-export const heightmapToString = (heightmap: Heightmap) => {
+export const heightmapToString = (heightmap: HeightmapAny, cellW = 4) => {
   const { width, height, data } = heightmap
 
   const rows: string[] = []
@@ -99,7 +102,7 @@ export const heightmapToString = (heightmap: Heightmap) => {
     for (let x = 0; x < width; x++) {
       const i = rowStart + x
 
-      row += data[i].toString().padStart(4, ' ')
+      row += data[i].toString().padStart(cellW, ' ')
     }
 
     rows.push(row)

@@ -2,7 +2,7 @@ import { colorToRgb, createColor, createColor24 } from '../lib/image/color.js'
 import { createImage } from '../lib/image/create.js'
 import { fill } from '../lib/image/fill.js'
 import { loadImage } from '../lib/image/load.js'
-import { resize } from '../lib/image/resize.js'
+import { pointResize } from '../lib/image/resize.js'
 import { Maybe, Scene, State, T2 } from '../lib/types.js'
 import { maybe, wait } from '../lib/util.js'
 
@@ -362,7 +362,7 @@ export const paletteSandboxScene = (): Scene => {
     const scale = newHeight / palHeight
     const newWidth = Math.floor(palWidth * scale)
 
-    resize(
+    pointResize(
       palImage, buffer,
       [0, 0, palWidth, palHeight], [0, 0, newWidth, newHeight]
     )
@@ -371,7 +371,7 @@ export const paletteSandboxScene = (): Scene => {
 
     const pal2Image = createPal2Image(pal2, palWidth, palHeight)
 
-    resize(
+    pointResize(
       pal2Image, buffer,
       [0, 0, palWidth, palHeight], [newWidth, 0, newWidth, newHeight]
     )
@@ -398,7 +398,7 @@ export const paletteSandboxScene = (): Scene => {
     const scaleOrig = newOrigWidth / testImage.width
     const newOrigHeight = Math.floor(testImage.height * scaleOrig)
 
-    resize(
+    pointResize(
       testImage, buffer,
       [0, 0, testImage.width, testImage.height],
       [palsWidth, 0, newOrigWidth, newOrigHeight]
@@ -423,7 +423,7 @@ export const paletteSandboxScene = (): Scene => {
       'Unique colors:', colorsIndexed
     )
 
-    resize(
+    pointResize(
       indexed, buffer,
       [0, 0, indexed.width, indexed.height],
       [palsWidth + newOrigWidth, 0, newOrigWidth, newOrigHeight]
@@ -444,7 +444,7 @@ export const paletteSandboxScene = (): Scene => {
       'Unique colors:', colorsLut
     )
 
-    resize(
+    pointResize(
       indexedLut, buffer,
       [0, 0, indexedLut.width, indexedLut.height],
       [palsWidth + newOrigWidth * 2, 0, newOrigWidth, newOrigHeight]
@@ -465,7 +465,7 @@ export const paletteSandboxScene = (): Scene => {
       'Unique colors:', colorsLut32
     )
 
-    resize(
+    pointResize(
       indexedLut32, buffer,
       [0, 0, indexedLut32.width, indexedLut32.height],
       [palsWidth + newOrigWidth * 3, 0, newOrigWidth, newOrigHeight]
@@ -498,7 +498,7 @@ export const paletteSandboxScene = (): Scene => {
       'Unique colors:', colorsLookup2
     )
 
-    resize(
+    pointResize(
       indexedLookup2, buffer,
       [0, 0, indexedLookup2.width, indexedLookup2.height],
       [palsWidth + newOrigWidth * 4, 0, newOrigWidth, newOrigHeight]

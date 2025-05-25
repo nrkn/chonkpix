@@ -1,4 +1,4 @@
-import { Maybe, Orientation, T2, T3, T4, T5, T6 } from './types.js';
+import { Maybe, Orientation, T2, T3, T4, T5, T6, T7, T8 } from './types.js';
 export declare const maybe: <T>(value: Maybe<T>) => value is T;
 export declare const assrt: <T>(value: Maybe<T>, message?: string) => T;
 export declare const assrtInt: (value: number, message?: string) => number;
@@ -8,11 +8,15 @@ export declare const t3Factory: <T>(defaultValue: T) => (a?: T, b?: T, c?: T) =>
 export declare const t4Factory: <T>(defaultValue: T) => (a?: T, b?: T, c?: T, d?: T) => T4<T>;
 export declare const t5Factory: <T>(defaultValue: T) => (a?: T, b?: T, c?: T, d?: T, e?: T) => T5<T>;
 export declare const t6Factory: <T>(defaultValue: T) => (a?: T, b?: T, c?: T, d?: T, e?: T, f?: T) => T6<T>;
+export declare const t7Factory: <T>(defaultValue: T) => (a?: T, b?: T, c?: T, d?: T, e?: T, f?: T, g?: T) => T7<T>;
+export declare const t8Factory: <T>(defaultValue: T) => (a?: T, b?: T, c?: T, d?: T, e?: T, f?: T, g?: T, h?: T) => T8<T>;
 export declare const t2N: (a?: number, b?: number) => T2<number>;
 export declare const t3N: (a?: number, b?: number, c?: number) => T3<number>;
 export declare const t4N: (a?: number, b?: number, c?: number, d?: number) => T4<number>;
 export declare const t5N: (a?: number, b?: number, c?: number, d?: number, e?: number) => T5<number>;
 export declare const t6N: (a?: number, b?: number, c?: number, d?: number, e?: number, f?: number) => T6<number>;
+export declare const t7N: (a?: number, b?: number, c?: number, d?: number, e?: number, f?: number, g?: number) => T7<number>;
+export declare const t8N: (a?: number, b?: number, c?: number, d?: number, e?: number, f?: number, g?: number, h?: number) => T8<number>;
 export declare const lerp: (a: number, b: number, t: number) => number;
 export declare const wait: (ms?: number) => Promise<unknown>;
 export declare const orientation: (w: number, h: number) => Orientation;

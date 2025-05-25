@@ -1,5 +1,5 @@
 import { randInt } from '../../random.js'
-import { lower, raise } from '../sculpt.js'
+import { lowerHmPt, raiseHmPt } from '../sculpt.js'
 import { Heightmap } from '../types.js'
 
 export const generateHeightmap = (
@@ -13,9 +13,9 @@ export const generateHeightmap = (
     const x = randInt(width)
     const y = randInt(height)
     if (randInt(2)) {
-      raise(heightmap, x, y)
+      raiseHmPt(heightmap, x, y)
     } else {
-      lower(heightmap, x, y)
+      lowerHmPt(heightmap, x, y)
     }
   }
 

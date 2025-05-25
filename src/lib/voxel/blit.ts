@@ -15,14 +15,21 @@ export const blitVoxels = (
 
   for (let i = 0; i < voxels.length; i++) {
     const vox = voxels[i]
+
+    // with tilted orthographic projection, only the top and front faces are
+    // visible, so a voxel is a T5
     const vx = vox[V_X]
     const vy = vox[V_Y]
     const vz = vox[V_Z]
     const vt = vox[V_TOP]
     const vf = vox[V_FRONT]
 
+    // for tilted ortho, x2 === x3
     if (vx < 0 || vx >= imageData.width) continue
 
+    // tilted orthographic projection
+    // both are left handled, but origin of y for 3d is at bottom, for 2d is
+    // at top
     const dyTop = imageData.height - 1 - (vy + vz)
 
     if (dyTop >= 0 && dyTop < imageData.height) {

@@ -17,19 +17,19 @@ export type State = {
 
   view: {
     getZoom: () => number
-    setZoom: ( value: number ) => void
+    setZoom: (value: number) => void
     getBuffer: () => ImageData
   }
 
-  getRunning: () => boolean 
-  setRunning: ( value: boolean ) => void
+  getRunning: () => boolean
+  setRunning: (value: boolean) => void
 }
 
 export type Scene = {
-  init: ( state: State ) => Promise<void>
-  update: ( state: State ) => void
-  quit: ( state: State ) => Promise<void>
-  setActive?: ( value: boolean ) => void
+  init: (state: State) => Promise<void>
+  update: (state: State) => void
+  quit: (state: State) => Promise<void>
+  setActive?: (value: boolean) => void
 }
 
 export type T2<T = number> = [T, T]
@@ -37,9 +37,23 @@ export type T3<T = number> = [T, T, T]
 export type T4<T = number> = [T, T, T, T]
 export type T5<T = number> = [T, T, T, T, T]
 export type T6<T = number> = [T, T, T, T, T, T]
+export type T7<T = number> = [T, T, T, T, T, T, T]
+export type T8<T = number> = [T, T, T, T, T, T, T, T]
 
 export type Maybe<T> = T | null | undefined
 
-export type SizeSlug = `${ number }x${ number}`
+export type SizeSlug = `${number}x${number}`
 
 export type Orientation = 'landscape' | 'portrait'
+
+// exclude bigint as the values won't be compatible with many utils etc
+export type TypedArray =
+  | Uint8Array
+  | Uint8ClampedArray
+  | Uint16Array
+  | Uint32Array
+  | Int8Array
+  | Int16Array
+  | Int32Array
+  | Float32Array
+  | Float64Array

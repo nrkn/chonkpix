@@ -1,4 +1,4 @@
-import { Maybe, Orientation, T2, T3, T4, T5, T6 } from './types.js'
+import { Maybe, Orientation, T2, T3, T4, T5, T6, T7, T8 } from './types.js'
 
 export const maybe = <T>(value: Maybe<T>): value is T =>
   value !== null && value !== undefined
@@ -45,12 +45,23 @@ export const t6Factory = <T>(defaultValue: T) =>
     a, b, c, d, e, f
   ]
 
+export const t7Factory = <T>(defaultValue: T) =>
+  (a = defaultValue, b = a, c = a, d = a, e = a, f = a, g = a): T7<T> => [
+    a, b, c, d, e, f, g
+  ]
+
+export const t8Factory = <T>(defaultValue: T) =>
+  (a = defaultValue, b = a, c = a, d = a, e = a, f = a, g = a, h = a): T8<T> =>
+    [a, b, c, d, e, f, g, h]
+
 // for number tuples
 export const t2N = t2Factory(0)
 export const t3N = t3Factory(0)
 export const t4N = t4Factory(0)
 export const t5N = t5Factory(0)
 export const t6N = t6Factory(0)
+export const t7N = t7Factory(0)
+export const t8N = t8Factory(0)
 
 export const lerp = (a: number, b: number, t: number) => a + (b - a) * t
 

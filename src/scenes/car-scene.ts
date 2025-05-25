@@ -1,14 +1,17 @@
+import { createHeightmapI16 } from '../lib/heightmap/create.js'
+import { Heightmap } from '../lib/heightmap/types.js'
+import { bresenhamLine } from '../lib/image/bresenham.js'
 import { createColor } from '../lib/image/color.js'
 import { createImage } from '../lib/image/create.js'
 import { fill } from '../lib/image/fill.js'
 import { loadImage } from '../lib/image/load.js'
-import { resize } from '../lib/image/resize.js'
-import { drawRotated, drawRotatedAndScaled } from '../lib/image/rotate.js'
-import { pset } from '../lib/image/util.js'
+import { bilinearResize, pointResize } from '../lib/image/resize.js'
+import { drawRotated, drawRotatedAndPointScaled } from '../lib/image/rotate.js'
+import { clampRect, pset } from '../lib/image/util.js'
 import { debugTextSceneHelper } from '../lib/scene/debug-text.js'
 import { zoomOnWheel } from '../lib/scene/io.js'
 import { textTable } from '../lib/text/table-layout.js'
-import { Maybe, Scene, State } from '../lib/types.js'
+import { Maybe, Scene, State, T4 } from '../lib/types.js'
 import { maybe } from '../lib/util.js'
 import { Bicycle, createBicycle, updateBicycle } from './car/bicycle.js'
 
@@ -57,8 +60,8 @@ const worldConfig: WorldConfig = {
   globalFriction: 5
 }
 
-const minZoom = 0.5
-const maxZoom = 2
+const minZoom = 0.75
+const maxZoom = 1.5
 
 const zoomDelta = maxZoom - minZoom
 
@@ -87,6 +90,21 @@ const brake = accel * carConfig.brakeFactor
 const maxSpeed = carConfig.maxSpeedKmph / kmphScale
 const minRevSpeed = -(maxSpeed * carConfig.revSpeedFactor)
 
+type ReverseTurning = 'arcade' | 'realistic'
+
+type Hm = Heightmap<Int16Array>
+
+const fillHm = (hm: Hm, rect: T4, value: number) => {
+  rect = clampRect(hm.width, hm.height, rect)
+
+  for (let y = rect[1]; y < rect[3]; y++) {
+    const rowStart = y * hm.width
+    for (let x = rect[0]; x < rect[2]; x++) {
+      hm.data[rowStart + x] = value
+    }
+  }
+}
+
 export const carScene = (): Scene => {
   let isActive = false
   let lastW = 0
@@ -96,10 +114,13 @@ export const carScene = (): Scene => {
   let debugText: string[] = []
 
   let track: Maybe<ImageData>
+  let hm: Maybe<Hm>
   let carSprite: Maybe<ImageData>
 
   // why bicycle? because it's a simple way to model car physics
   let car: Maybe<Bicycle>
+
+  let reverseTurning: ReverseTurning = 'arcade'
 
   //
 
@@ -108,11 +129,28 @@ export const carScene = (): Scene => {
 
     await debugHelper.init(state)
 
-    //
-
+    // // test tracks - worlds from other games etc
     //track = await loadImage('scenes/car/track.png')
-    //track = await loadImage('scenes/car/track-huge.png')
-    track = await loadImage('scenes/car/track-huge-c2.png')
+    //track = await loadImage('scenes/car/gtav-1bpp.png')
+    //track = await loadImage('scenes/car/gtav-map.png')
+    //track = await loadImage('scenes/car/gtav-satellite.png')
+    //track = await loadImage('scenes/car/fortnite.jpg')
+    //track = await loadImage('scenes/car/fantasy-world.png')
+    //track = await loadImage('scenes/car/fantasy-city.jpg')
+    track = await loadImage('scenes/car/GrandTheftAuto2-Downtown.jpg')
+    //track = await loadImage('scenes/car/MarioKart64-MushroomCup-KalimariDesert.jpg')
+    //track = await loadImage('scenes/car/MarioKart64-MushroomCup-KoopaTroopaBeach.jpg')
+    //track = await loadImage('scenes/car/MarioKart64-MushroomCup-LuigiRaceway.jpg')
+    //track = await loadImage('scenes/car/MarioKart64-MushroomCup-MooMooFarm.jpg')
+    //track = await loadImage('scenes/car/MarioKart64-FlowerCup-MarioRaceway.jpg')
+
+    // custom world
+    const worldW = 2048
+    const worldH = 2048
+    // texture
+    // track = createImage(worldW, worldH)
+    // heightmap
+    hm = createHeightmapI16(worldW, worldH)
 
     // carSprite = createImage(carW, carH)
 
@@ -121,12 +159,14 @@ export const carScene = (): Scene => {
     // pset(carSprite, 3, 0, headlightColor)
     carSprite = await loadImage('scenes/car/car.png')
 
-    //const trackCx = Math.floor(track.width / 2)
-    //const trackCy = Math.floor(track.height / 2)
-    const trackCx = 5411
-    const trackCy = 14696
+    const trackCx = Math.floor(track.width / 2)
+    const trackCy = Math.floor(track.height / 2)
+    //const trackCx = 5411
+    //const trackCy = 14696
 
     car = createBicycle([trackCx, trackCy], deg270, 0, 0, carConfig.wheelBase)
+
+    reverseTurning = 'realistic'
 
     isActive = true
   }
@@ -156,16 +196,16 @@ export const carScene = (): Scene => {
       turn = 1
     }
 
-    // if (zoomOnWheel(state)) {
-    //   lastW = 0
-    //   lastH = 0
-    // }
+    if (zoomOnWheel(state)) {
+      lastW = 0
+      lastH = 0
+    }
   }
-
-  let lastZoom = maxZoom
 
   const update = (state: State) => {
     if (!maybe(track)) throw Error('Expected track')
+    if (!maybe(hm)) throw Error('Expected hm')
+
     if (!maybe(carSprite)) throw Error('Expected carSprite')
     if (!maybe(car)) throw Error('Expected car')
 
@@ -197,12 +237,13 @@ export const carScene = (): Scene => {
     }
 
     if (turn) {
-      // the slower we're going, the less we can turn
-      // const speedFactor = Math.min(
-      //   1, Math.max(0, Math.abs(car.speed) / maxSpeed)
-      // )
+      if (reverseTurning === 'arcade' || car.speed >= 0) {
+        car.steerAngle += turn * delta * carConfig.turnRate
+      } else {
+        // reversing - invert turn
+        car.steerAngle -= turn * delta * carConfig.turnRate
+      }
 
-      car.steerAngle += turn * delta * carConfig.turnRate// * speedFactor
 
       // enforce steering limits
       car.steerAngle = Math.max(
@@ -224,8 +265,18 @@ export const carScene = (): Scene => {
 
     const updated = updateBicycle(car, delta)
 
-    // we could check here for collision, that's why it's separate from car
-    // todo - collision detection
+    // collision detection
+    const travel = bresenhamLine(
+      car.location[0], car.location[1], updated.location[0], updated.location[1]
+    )
+
+    if (travel.length > 1) {
+      let first = travel[0]
+
+      for (let i = 1; i < travel.length; i++) {
+        // todo
+      }
+    }
 
     // if no collision, update car
     car.location = updated.location
@@ -233,20 +284,7 @@ export const carScene = (): Scene => {
 
     //
 
-    // const zoom = Math.round(
-    //   minZoom + (1 - (Math.abs(car.speed) / maxSpeed)) * zoomDelta
-    // )
-
-    // if (zoom !== lastZoom) {
-    //   state.view.setZoom(zoom)
-
-    //   lastZoom = zoom
-    // }
-
     const zoom = minZoom + (1 - (Math.abs(car.speed) / maxSpeed)) * zoomDelta
-
-
-
 
     //
 
@@ -260,30 +298,32 @@ export const carScene = (): Scene => {
 
     // draw the track, centered on the car, onto the view, rotated by -carHeading
     // and then deg90 to face "up"
-    drawRotatedAndScaled(
+    drawRotatedAndPointScaled(
       track,
       car.location[0], car.location[1],
       buffer, vx, vy,
       -car.heading - deg90, zoom
     )
     // draw the car, centered on the car, onto the view
-    drawRotatedAndScaled(
+    drawRotatedAndPointScaled(
       carSprite, carCx, carCy, buffer, vx, vy, car.steerAngle, zoom
     )
 
     // mini map
 
     const mmHeight = Math.floor(height / 2)
-
-    // scale to track.height
     const mmScale = mmHeight / track.height
-
     const mmWidth = Math.floor(track.width * mmScale)
 
     const mmX = 2
     const mmY = height - mmHeight - 2
 
-    resize(
+    // pointResize(
+    //   track, buffer,
+    //   [0, 0, track.width, track.height],
+    //   [mmX, mmY, mmWidth, mmHeight]
+    // )
+    bilinearResize(
       track, buffer,
       [0, 0, track.width, track.height],
       [mmX, mmY, mmWidth, mmHeight]

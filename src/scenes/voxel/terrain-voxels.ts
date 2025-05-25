@@ -1,6 +1,6 @@
 import { generateHeightmap } from '../../lib/heightmap/generate/index.js'
-import { raiseRect, lowerRect, flattenRect } from '../../lib/heightmap/sculpt.js'
-import { normalizeHeightmap, heightmapToPoint3, minHeight, maxHeight } from '../../lib/heightmap/util.js'
+import { raiseHmRect, lowerHmRect, flattenHmRect } from '../../lib/heightmap/sculpt.js'
+import { normalizeHmU8C, heightmapToPoint3, minHeight, maxHeight } from '../../lib/heightmap/util.js'
 import { randInt } from '../../lib/random.js'
 import { State } from '../../lib/types.js'
 import { createWall, createPlane } from '../../lib/voxel/generate/create.js'
@@ -22,7 +22,7 @@ export const generateTerrainVoxels = async (state: State) => {
 
   let hm = generateHeightmap(mapW, mapH, mapW * mapH * 8)
 
-  hm = normalizeHeightmap(hm)
+  hm = normalizeHmU8C(hm)
 
   const endHmTime = performance.now()
 
@@ -32,7 +32,7 @@ export const generateTerrainVoxels = async (state: State) => {
 
   const startSculptTime = performance.now()
 
-  const raisedHeight = raiseRect(hm, 96, 80, 16, 12)
+  const raisedHeight = raiseHmRect(hm, 96, 80, 16, 12)
 
   // x0,z0,x1,z1,y0,h - 3d coordinate system of voxel space
   const rTopWall = createWall(97, 111, 110, 111, raisedHeight, 8)
@@ -50,9 +50,9 @@ export const generateTerrainVoxels = async (state: State) => {
     ...rRoof
   ]
 
-  const loweredHeight = lowerRect(hm, 32, 48, 12, 16)
+  const loweredHeight = lowerHmRect(hm, 32, 48, 12, 16)
 
-  const flattenedHeight = flattenRect(hm, 64, 64, 16, 24)
+  const flattenedHeight = flattenHmRect(hm, 64, 64, 16, 24)
 
   const endSculptTime = performance.now()
 

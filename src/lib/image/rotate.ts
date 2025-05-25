@@ -45,7 +45,7 @@ export const drawRotated = (
   return dest
 }
 
-export const drawRotatedAndScaled = (
+export const drawRotatedAndPointScaled = (
   src: ImageData, srcCx: number, srcCy: number,
   dest: ImageData, destCx: number, destCy: number,
   radians: number, srcScale = 1
@@ -68,11 +68,6 @@ export const drawRotatedAndScaled = (
       const x = dx - destCx
       const y = dy - destCy
 
-      // const sxFloat = x * cos + y * sin + srcCx
-      // const syFloat = -x * sin + y * cos + srcCy
-
-      // const sx = Math.round(sxFloat / srcScale)
-      // const sy = Math.round(syFloat / srcScale)
       const scaledX = (x / srcScale)
       const scaledY = (y / srcScale)
 

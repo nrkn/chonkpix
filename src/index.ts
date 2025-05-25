@@ -41,11 +41,11 @@ const { quit: carQuit } = car
 
 // or this for a single scene:
 const scenes = [
-  //[ranger, rangerQuit]
-  //[pal, palQuit]
-  //[ voxel, voxelQuit ]
-  //[hsl, hslQuit]
-  [car, carQuit]
+  //[ranger, rangerQuit],
+  //[pal, palQuit],
+  //[ voxel, voxelQuit ],
+  //[hsl, hslQuit],
+  [car, carQuit],
 ] as const
 
 let sceneIndex = 0

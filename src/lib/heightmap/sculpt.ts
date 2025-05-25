@@ -1,16 +1,28 @@
 import { clampRect } from '../image/util.js'
 import { T4 } from '../types.js'
-import { Heightmap } from './types.js'
+import { Heightmap, HeightmapAny } from './types.js'
 import { enqueueNeighbours } from './util.js'
 
-export const raise = (heightmap: Heightmap, x: number, y: number) => {
+// excl max
+const MAX_U8 = 256
+const MAX_U16 = 65536
+const MAX_I16 = 32768
+
+// incl min
+const MIN_U8 = 0
+const MIN_U16 = 0
+const MIN_I16 = -32768
+
+export const raiseHmPt = (
+  heightmap: HeightmapAny, x: number, y: number, max = MAX_U8
+) => {
   const { width, height, data } = heightmap
 
   const i = y * width + x
 
   const v = data[i] + 1
 
-  if (v > 255) return
+  if (v >= max) return
 
   data[i] = v
 
@@ -41,14 +53,24 @@ export const raise = (heightmap: Heightmap, x: number, y: number) => {
   }
 }
 
-export const lower = (heightmap: Heightmap, x: number, y: number) => {
+export const raiseHmPtU16 = (
+  heightmap: Heightmap<Uint16Array>, x: number, y: number, max = MAX_U16
+) => raiseHmPt(heightmap, x, y, max)
+
+export const raiseHmPtI16 = (
+  heightmap: Heightmap<Int16Array>, x: number, y: number, max = MAX_I16
+) => raiseHmPt(heightmap, x, y, max)
+
+export const lowerHmPt = (
+  heightmap: HeightmapAny, x: number, y: number, min = MIN_U8
+) => {
   const { width, height, data } = heightmap
 
   const i = y * width + x
 
   const v = data[i] - 1
 
-  if (v < 0) return
+  if (v < min) return
 
   data[i] = v
 
@@ -79,12 +101,20 @@ export const lower = (heightmap: Heightmap, x: number, y: number) => {
   }
 }
 
+export const lowerHmPtU16 = (
+  heightmap: Heightmap<Uint16Array>, x: number, y: number, min = MIN_U16
+) => lowerHmPt(heightmap, x, y, min)
+
+export const lowerHmPtI16 = (
+  heightmap: Heightmap<Int16Array>, x: number, y: number, min = MIN_I16
+) => lowerHmPt(heightmap, x, y, min)
 
 // raise every point in rect to highest value in rect
-export const raiseRect = (
-  heightmap: Heightmap, x: number, y: number, w: number, h: number
+export const raiseHmRect = (
+  heightmap: HeightmapAny, x: number, y: number, w: number, h: number,
+  max = MAX_U8
 ) => {
-  let highest = 0
+  let highest = Number.NEGATIVE_INFINITY
 
   // find highest value in rect
   for (let j = y; j < y + h; j++) {
@@ -117,7 +147,7 @@ export const raiseRect = (
       let v = heightmap.data[index]
 
       while (v < highest) {
-        raise(heightmap, i, j)
+        raiseHmPt(heightmap, i, j, max)
         v++
       }
     }
@@ -126,11 +156,22 @@ export const raiseRect = (
   return highest
 }
 
+export const raiseHmRectU16 = (
+  heightmap: Heightmap<Uint16Array>, x: number, y: number, w: number, h: number,
+  max = MAX_U16
+) => raiseHmRect(heightmap, x, y, w, h, max)
+
+export const raiseHmRectI16 = (
+  heightmap: Heightmap<Int16Array>, x: number, y: number, w: number, h: number,
+  max = MAX_I16
+) => raiseHmRect(heightmap, x, y, w, h, max)
+
 // lower every point in rect to lowest value in rect
-export const lowerRect = (
-  heightmap: Heightmap, x: number, y: number, w: number, h: number
+export const lowerHmRect = (
+  heightmap: HeightmapAny, x: number, y: number, w: number, h: number,
+  min = MIN_U8
 ) => {
-  let lowest = 255
+  let lowest = Number.POSITIVE_INFINITY
 
   // find lowest value in rect
   for (let j = y; j < y + h; j++) {
@@ -163,7 +204,7 @@ export const lowerRect = (
       let v = heightmap.data[index]
 
       while (v > lowest) {
-        lower(heightmap, i, j)
+        lowerHmPt(heightmap, i, j, min)
         v--
       }
     }
@@ -172,9 +213,20 @@ export const lowerRect = (
   return lowest
 }
 
+export const lowerHmRectU16 = (
+  heightmap: Heightmap<Uint16Array>, x: number, y: number, w: number, h: number,
+  min = MIN_U16
+) => lowerHmRect(heightmap, x, y, w, h, min)
+
+export const lowerHmRectI16 = (
+  heightmap: Heightmap<Int16Array>, x: number, y: number, w: number, h: number,
+  min = MIN_I16
+) => lowerHmRect(heightmap, x, y, w, h, min)
+
 // average the values in the rect, then raise or lower each point to match
-export const flattenRect = (
-  heightmap: Heightmap, x: number, y: number, w: number, h: number
+export const flattenHmRect = (
+  heightmap: HeightmapAny, x: number, y: number, w: number, h: number,
+  min = MIN_U8, max = MAX_U8
 ) => {
   let sum = 0
   let count = 0
@@ -211,11 +263,11 @@ export const flattenRect = (
       let v = heightmap.data[index]
 
       while (v < avg) {
-        raise(heightmap, i, j)
+        raiseHmPt(heightmap, i, j, max)
         v++
       }
       while (v > avg) {
-        lower(heightmap, i, j)
+        lowerHmPt(heightmap, i, j, min)
         v--
       }
     }
@@ -224,7 +276,17 @@ export const flattenRect = (
   return avg
 }
 
-export const smooth = (
+export const flattenHmRectU16 = (
+  heightmap: Heightmap<Uint16Array>, x: number, y: number, w: number, h: number,
+  min = MIN_U16, max = MAX_U16
+) => flattenHmRect(heightmap, x, y, w, h, min, max)
+
+export const flattenHmRectI16 = (
+  heightmap: Heightmap<Int16Array>, x: number, y: number, w: number, h: number,
+  min = MIN_I16, max = MAX_I16
+) => flattenHmRect(heightmap, x, y, w, h, min, max)
+
+export const smoothHmU8C = (
   heightmap: Heightmap,
   rect: T4,
   times: number
